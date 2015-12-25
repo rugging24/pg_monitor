@@ -9,19 +9,16 @@ def getRelationSizes( param=None ) :
         output = ''
         if param != None :
                 query = "SELECT \
-                              datname, \
-                              ( current_setting('max_connections')::int - current_setting('superuser_reserved_connections')::int ) as max_allowed_connect,\
-                              coalesce( nullif((numbackends -1 ),-1), 0 ) as connect_count,\
-                              ( coalesce( nullif((numbackends -1 ),-1), 0 ) * 100 ) / current_setting('max_connections')::int as percent_connect \
-                         FROM \
-                              pg_stat_database \
-                         WHERE datname <> 'template0' AND datname <> 'template1'"
+		              schemaname || '.' || relname, pg_relation_size(schemaname || '.' || relname)\
+			 FROM \
+		             pg_stat_user_tables\
+			 WHERE \
+			     pg_relation_size(schemaname || '.' || relname) >= {0:d} ".format(warning)
+			
 
+		warning = getDen(  param['warning'] , max_connect )
+		critical = getLimits(  param['critical'] , max_connect )
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
-                connect_sum = 0
-                max_connect = rows[0][1]
-                warning = getLimits(  param['warning'] , max_connect )
-                critical = getLimits(  param['critical'] , max_connect )
                 for row in rows :
                         if perfdata == '-' :
                                 perfdata = row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '0' + ';' + str(row[1])
