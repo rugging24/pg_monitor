@@ -58,7 +58,7 @@ def getBackends( param=None ) :
 		status.sort( reverse=True )
 		return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 	else :
-		return None
+		return 2 + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
 	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

@@ -1,42 +1,108 @@
 #!/usr/bin/python
 
 import sql
+import checkStatus as st
+
+def getFactor ( check_val ) :
+	factor = 0 
+	val = ''
+	unit = ''
+	if check_val.lower().endswith('k') == True :
+		factor = 1024
+		val = check_val.lower().replace('k','')
+		unit = 'KB'
+	elif check_val.lower().endswith('m') == True :
+		factor = 1024 * 1024
+		val = check_val.lower().replace('m','')
+		unit = 'MB'
+	elif check_val.lower().endswith('g') == True :
+		factor = 1024 * 1024 * 1024
+		val = check_val.lower().replace('g','')
+		unit = 'GB'
+	elif check_val.lower().endswith('t') == True :
+		factor = 1024 * 1024 * 1024 * 1024
+		val = check_val.lower().replace('t','')
+		unit = 'TB'
+	elif check_val.lower().endswith('p') == True :
+		factor = 1024 * 1024 * 1024 * 1024 * 1024
+		val = check_val.lower().replace('p','')
+		unit = 'PB'
+
+	return [val , factor, unit]	
+
+
+def getQuery ( check, d0,d1,d2,d3 ) :
+	query = ''
+	if check == 'table_size' :
+		query = "SELECT \
+                              schemaname || '.' || relname, \
+                              (pg_table_size(schemaname || '.' || relname) / {0:d}) as warn_size,\
+			      (pg_table_size(schemaname || '.' || relname) / {1:d}) as crit_size,\
+			      (pg_table_size(schemaname || '.' || relname) / 1024 )::double precision as display_size\
+                         FROM \
+                             pg_stat_user_tables\
+                         WHERE \
+                            ( pg_table_size(schemaname || '.' || relname) / {2:d} ) >= {3:d} ".format(int(d0) , int(d1) ,int(d2), int(d3) )
+	elif check == 'index_size' :
+		query = "SELECT \
+	                       schemaname || '.' || relname || '.' || indexrelname, \
+		               (pg_indexes_size(schemaname || '.' || indexrelname) / {0:d}) as warn_size,\
+			       (pg_indexes_size(schemaname || '.' || indexrelname) / {1:d})  as crit_size,\
+                               (pg_indexes_size(schemaname || '.' || indexrelname) / 1024 )::double precision  as display_size\
+			FROM \
+	                       pg_stat_user_indexes \
+                        WHERE \
+        	             ( pg_indexes_size(schemaname || '.' || indexrelname) / {2:d} ) >= {3:d}".format(int(d0) , int(d1) ,int(d2), int(d3) )
+	elif check == 'database_size' :
+		query = "SELECT \
+	                      datname, (pg_database_size(datname) / {0:d} ) as warn_size, \
+			      (pg_database_size(datname) / {1:d})  as crit_size, \
+			      (pg_database_size(datname) / 1024 )::double precision  as display_size \
+                         FROM \
+	                      pg_database \
+                         WHERE \
+	                      datistemplate IS FALSE \
+                         AND \
+	                      ( pg_database_size(datname) / {2:d} ) >= {3:d}".format(int(d0) , int(d1) ,int(d2), int(d3) )
+
+	return query 
 
 def getRelationSizes( param=None ) :
-        item_name = 'POSTGRES_BACKENDS'
+        item_name = 'POSTGRES_'
         status = []
         perfdata = '-'
-        output = ''
+        output = 'OK'
         if param != None :
-                query = "SELECT \
-		              schemaname || '.' || relname, pg_relation_size(schemaname || '.' || relname)\
-			 FROM \
-		             pg_stat_user_tables\
-			 WHERE \
-			     pg_relation_size(schemaname || '.' || relname) >= {0:d} ".format(warning)
-			
-
-		warning = getDen(  param['warning'] , max_connect )
-		critical = getLimits(  param['critical'] , max_connect )
+		warning = getFactor( param['warning'] )
+		critical = getFactor( param['critical'] )
+		item_name = item_name + str(param['check']).upper()
+                query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
-                for row in rows :
-                        if perfdata == '-' :
-                                perfdata = row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '0' + ';' + str(row[1])
-                                output =  '{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
-                        elif perfdata != '-'  :
-                                perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '0' + ';' + str(row[1])
-                                output =  output + ';{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
-                        connect_sum += int(row[2])
-
-
-                status.append( st.getStatus( int(connect_sum),int(warning) , int(critical), int('0') , int(max_connect)  ) )
-
-                status.sort( reverse=True )
-                return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+		if len(rows) > 0 :
+                	for row in rows :
+				out_unit = ''
+				if int(row[2]) >= int(critical[0]) :
+					status.append(2)
+					out_unit = [row[2] , critical[2] ]
+				elif int(row[1]) >= int(warning[0]) :
+					status.append(1)
+					out_unit = [ row[1], warning[2] ]
+                        	if perfdata == '-' :
+                                	perfdata = row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0])
+                                	output =  '{0:s} is {1:d} {2:s} big'.format(row[0],out_unit[0],out_unit[1])
+                        	elif perfdata != '-'  :
+                                	perfdata = perfdata + '|' + row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0])
+                                	output =  output + ';{0:s} is {1:d} {2:s} big'.format(row[0],out_unit[0],out_unit[1])
+			status.sort( reverse=True )
+			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+		elif len(rows) == 0 :
+                	status.append(0)
+                	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
         else :
-                return None
+		return 2 + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + 'Invalid parameters passed to check'
+
 ## testing the function 
 if __name__ == '__main__' :
         print ( getRelationSizes( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '30K'  , 'critical' : '45K'  } )  )
+                         'warning' : '3k'  , 'critical' : '5m'  , 'check' : 'table_size' } )  )
 

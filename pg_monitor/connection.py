@@ -39,7 +39,7 @@ def getConnections( param=None ) :
                 status.sort( reverse=True )
                 return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
         else :
-                return None
+                return 2 + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
         print ( getConnections( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '' } )  )
