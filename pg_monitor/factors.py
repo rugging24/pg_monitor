@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-def getFactor ( check_val ) :
+def getTimeFactor ( check_val ) :
         factor = 0
         val = ''
         unit = ''
@@ -24,5 +24,33 @@ def getFactor ( check_val ) :
                 factor = 60 * 24 * 7 * 52
                 val = check_val.lower().replace('yr','').replace('s','').replace(' ','')
                 unit = 'yr'
+
+        return [val , factor, unit]
+
+
+def getSizeFactor ( check_val ) :
+        factor = 0
+        val = ''
+        unit = ''
+        if check_val.lower().endswith('k') == True :
+                factor = 1024
+                val = check_val.lower().replace('k','')
+                unit = 'KB'
+        elif check_val.lower().endswith('m') == True :
+                factor = 1024 * 1024
+                val = check_val.lower().replace('m','')
+                unit = 'MB'
+        elif check_val.lower().endswith('g') == True :
+                factor = 1024 * 1024 * 1024
+                val = check_val.lower().replace('g','')
+                unit = 'GB'
+        elif check_val.lower().endswith('t') == True :
+                factor = 1024 * 1024 * 1024 * 1024
+                val = check_val.lower().replace('t','')
+                unit = 'TB'
+        elif check_val.lower().endswith('p') == True :
+                factor = 1024 * 1024 * 1024 * 1024 * 1024
+                val = check_val.lower().replace('p','')
+                unit = 'PB'
 
         return [val , factor, unit]

@@ -91,8 +91,8 @@ def getLocks( param=None ) :
 		query = "SELECT substring(version() FROM '(\d.\d)')"
                 version = (sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ))[0][0]
 		
-		warning = fac.getFactor(  param['warning'] )
-		critical = fac.getFactor(  param['critical'] )
+		warning = fac.getTimeFactor(  param['warning'] )
+		critical = fac.getTimeFactor(  param['critical'] )
 		rows_noblocks = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
 				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
 		rows_blocking = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\

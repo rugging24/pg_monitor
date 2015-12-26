@@ -2,34 +2,7 @@
 
 import sql
 import checkStatus as st
-
-def getFactor ( check_val ) :
-	factor = 0 
-	val = ''
-	unit = ''
-	if check_val.lower().endswith('k') == True :
-		factor = 1024
-		val = check_val.lower().replace('k','')
-		unit = 'KB'
-	elif check_val.lower().endswith('m') == True :
-		factor = 1024 * 1024
-		val = check_val.lower().replace('m','')
-		unit = 'MB'
-	elif check_val.lower().endswith('g') == True :
-		factor = 1024 * 1024 * 1024
-		val = check_val.lower().replace('g','')
-		unit = 'GB'
-	elif check_val.lower().endswith('t') == True :
-		factor = 1024 * 1024 * 1024 * 1024
-		val = check_val.lower().replace('t','')
-		unit = 'TB'
-	elif check_val.lower().endswith('p') == True :
-		factor = 1024 * 1024 * 1024 * 1024 * 1024
-		val = check_val.lower().replace('p','')
-		unit = 'PB'
-
-	return [val , factor, unit]	
-
+import factors as fac
 
 def getQuery ( check, d0,d1,d2,d3 ) :
 	query = ''
@@ -73,8 +46,8 @@ def getRelationSizes( param=None ) :
         perfdata = '-'
         output = 'OK'
         if param != None :
-		warning = getFactor( param['warning'] )
-		critical = getFactor( param['critical'] )
+		warning = fac.getSizeFactor( param['warning'] )
+		critical = fac.getSizeFactor( param['critical'] )
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )

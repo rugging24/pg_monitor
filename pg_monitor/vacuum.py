@@ -28,8 +28,8 @@ def getVacuums( param=None ) :
 			if param['ignoreNever']  == 0 :
 				operator = '>'
 		index =  getReturnIndex(check)
-		warning = fac.getFactor( param['warning'])
-		critical = fac.getFactor( param['critical']) 
+		warning = fac.getTimeFactor( param['warning'])
+		critical = fac.getTimeFactor( param['critical']) 
 		query = "SELECT \
 				(schemaname || '.' || relname) table_name,\
 				CASE WHEN {0:s} IS NULL THEN  \
