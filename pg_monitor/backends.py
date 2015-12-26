@@ -36,7 +36,7 @@ def getBackends( param=None ) :
                               ( coalesce( nullif((numbackends -1 ),-1), 0 ) * 100 ) / current_setting('max_connections')::int as percent_connect \
                          FROM \
                               pg_stat_database \
-			 WHERE datname <> 'template0' AND datname <> 'template1'"
+			 WHERE datname <> 'template0' AND datname <> 'template1' and datname <> 'postgres'"
 				
 		rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
@@ -44,21 +44,29 @@ def getBackends( param=None ) :
 		warning = getLimits(  param['warning'] , max_connect )
 		critical = getLimits(  param['critical'] , max_connect )
 		for row in rows :
-			if perfdata == '-' :
-				perfdata = row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '0' + ';' + str(row[1]) 
-				output =  '{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
-			elif perfdata != '-'  :
-				perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '0' + ';' + str(row[1])
-				output =  output + ';{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
-			connect_sum += int(row[2])
-	
-		
-		status.append( st.getStatus( int(connect_sum),int(warning) , int(critical), int('0') , int(max_connect)  ) )
+			if int(row[2]) != 0 :
+				if perfdata == '-' :
+					perfdata = row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1]) 
+					output =  '{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
+				elif perfdata != '-'  :
+					perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
+					output =  output + ';{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
+				connect_sum += int(row[2])		
+			else :
+				if perfdata == '-' :
+                                        perfdata = row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
+                                        output =  'No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
+                                elif perfdata != '-'  :
+                                        perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
+                                        output =  output + ';No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
+				status.append(2)
 
+		status.append( st.getStatus( int(connect_sum),int(warning) , int(critical), int('0') , int(max_connect)  ) )
+			
 		status.sort( reverse=True )
 		return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 	else :
-		return '2' + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + 'Invalid parameters passed to check'
+		return '2' + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
 	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
