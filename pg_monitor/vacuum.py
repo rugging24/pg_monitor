@@ -45,6 +45,9 @@ def getVacuums( param=None ) :
 
 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+		
+		if rows == None : 
+			return '2' + ' ' + 'POSTGRES_VACUUM_CHECKS' + ' ' + '-' + 'PostgreSQL Server is Down !!!'
 		if len(rows) > 0 :
                 	for row in rows : 
                                 out_unit = ''
@@ -76,7 +79,7 @@ def getVacuums( param=None ) :
 		else :
 			return str('0') + ' ' + item_name + ' ' + '-'  + ' ' + 'OK'
         else :
-                return 2 + ' ' + 'POSTGRES_VACUUM_CHECKS' + ' ' + '-' + 'Invalid parameters passed to check'
+                return '2' + ' ' + 'POSTGRES_VACUUM_CHECKS' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
         print ( getVacuums( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

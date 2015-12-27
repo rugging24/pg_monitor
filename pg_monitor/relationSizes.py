@@ -51,6 +51,10 @@ def getRelationSizes( param=None ) :
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+		
+		if rows == None : 
+			return '2' + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + ' ' + 'PostgreSQL Server is Down !!!'
+
 		if len(rows) > 0 :
                 	for row in rows :
 				out_unit = ''
@@ -72,7 +76,7 @@ def getRelationSizes( param=None ) :
                 	status.append(0)
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
         else :
-		return 2 + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + 'Invalid parameters passed to check'
+		return '2' + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 
 ## testing the function 
 if __name__ == '__main__' :

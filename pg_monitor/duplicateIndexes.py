@@ -48,6 +48,9 @@ def getBackends( param=None ) :
 			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname ;" 
 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+		if rows == None : 
+			return '2' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
+
 		if len(rows) > 0 :
                 	for row in rows :
                         	if output == '' :

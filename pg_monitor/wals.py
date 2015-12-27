@@ -20,6 +20,10 @@ def getWALs( param=None ) :
 			WHERE bar.size >= 16777216" 
 
                 rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+
+		if rows == None : 
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
+
                 warning = int (param['warning'])
                 critical = int(  param['critical'] )
 		if len(rows) > 0 :
@@ -32,9 +36,9 @@ def getWALs( param=None ) :
                 	status.sort( reverse=True )
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else :
-			return '2' + ' ' + item_name + ' ' + '-' + 'No WAL file found, at least One WAL file should be present.'
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'No WAL file found, at least One WAL file should be present.'
         else :
-                return 2 + ' ' + 'POSTGRES_WALS' + ' ' + '-' + 'Invalid parameters passed to check'
+                return '2' + ' ' + 'POSTGRES_WALS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
         print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

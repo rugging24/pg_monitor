@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 import psycopg2 as pg
+import psycopg2.errorcodes as err
 import sys
+import errorCodes as ec
 
 
 def getSQLResult ( connParam  ,query ) :
@@ -18,6 +20,10 @@ def getSQLResult ( connParam  ,query ) :
                 cur = conn.cursor()
                 cur.execute(query)
                 row = cur.fetchall()
+		conn.close()
+		cur.close()
 		return row 
-        except pg.Error as err :
-		return None
+        except Exception, e :
+		print (err.lookup(e))
+		sys.exit(0)
+		
