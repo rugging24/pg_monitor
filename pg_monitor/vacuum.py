@@ -44,10 +44,13 @@ def getVacuums( param=None ) :
 				( {1:s} {4:s}  0 ) ".format( index[1] ,index[2] , int(warning[0]) , int(warning[1]), operator )
 
 
-                rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
-		if rows == None : 
-			return '2' + ' ' + 'POSTGRES_VACUUM_CHECKS' + ' ' + '-' + 'PostgreSQL Server is Down !!!'
+		if results[0] == None : 
+			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]
+	
+		rows = results[1]
+
 		if len(rows) > 0 :
                 	for row in rows : 
                                 out_unit = ''
@@ -79,7 +82,7 @@ def getVacuums( param=None ) :
 		else :
 			return str('0') + ' ' + item_name + ' ' + '-'  + ' ' + 'OK'
         else :
-                return '2' + ' ' + 'POSTGRES_VACUUM_CHECKS' + ' ' + '-' + 'Invalid parameters passed to check'
+                return '2' + ' ' + 'POSTGRES_AUTOVACUUM' + ' ' + '-' + ' ' + 'This is a generic failure message for vacuuming monitoring checks. Please inpect the check script for details'
 ## testing the function 
 if __name__ == '__main__' :
         print ( getVacuums( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

@@ -30,21 +30,25 @@ def getBackends( param=None ) :
 	output = ''
 	if param != None :
                 query = "SELECT \
-			      datname, \
+			      dbs.datname, \
                               ( current_setting('max_connections')::int - current_setting('superuser_reserved_connections')::int ) as max_allowed_connect,\
                               coalesce( nullif((numbackends -1 ),-1), 0 ) as connect_count,\
                               ( coalesce( nullif((numbackends -1 ),-1), 0 ) * 100 ) / current_setting('max_connections')::int as percent_connect \
                          FROM \
-                              pg_stat_database \
-			 WHERE datname <> 'template0' AND datname <> 'template1' and datname <> 'postgres'"
+				pg_stat_database dbs \
+                         JOIN \
+				pg_database db on db.datname = dbs.datname \
+                         WHERE \
+				db.datistemplate IS FALSE "
 				
-		rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
 
-		if rows == None :
-			return '2' + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + ' ' + 'Postgresql Server is Down !!!!'
+		if results[0] == None :
+			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + str(results[1])
 
-		if len(rows) > 0  :
+		rows = results[1]
+		if len(rows[1]) > 0  :
 			max_connect = rows[0][1]
 			warning = getLimits(  param['warning'] , max_connect )
 			critical = getLimits(  param['critical'] , max_connect )
@@ -74,7 +78,7 @@ def getBackends( param=None ) :
 		return '2' + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
 if __name__ == '__main__' :
-	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'oolaniyi' , 'password' : '',\
+	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
                          'warning' : '30'  , 'critical' : '45%'  } )  ) 
 
 

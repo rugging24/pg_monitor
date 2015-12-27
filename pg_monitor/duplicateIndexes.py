@@ -47,9 +47,11 @@ def getBackends( param=None ) :
         			AND userdex.indexrelname = pg_indexes.indexname \
 			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname ;" 
 
-                rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
-		if rows == None : 
-			return '2' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+		if results[0] == None : 
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+		
+		rows = results[1]
 
 		if len(rows) > 0 :
                 	for row in rows :
@@ -60,7 +62,7 @@ def getBackends( param=None ) :
 
 			return '1' + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else :
-			return '0' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + ' ' + 'OK'
+			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'
 
         else :
                 return '2' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + 'Invalid parameters passed to check'

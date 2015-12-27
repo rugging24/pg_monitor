@@ -88,42 +88,50 @@ def getLocks( param=None ) :
         perfdata = '-'
         output = ''
         if param != None :
+		check = (param['check']).lower()
+		item_name = item_name + check.upper() + '_LOCKS'
 		query = "SELECT substring(version() FROM '(\d.\d)')"
-                ver = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
-		if ver == None :
-                        return '2' + ' ' + 'POSTGRES_NONBLOCKING_LOCKS' + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
+		if results[0] == None :
+                        return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 		
 
-		version = ver[0][0]
+		version = (results[1])[0][0]
 		
 		warning = fac.getTimeFactor(  param['warning'] )
 		critical = fac.getTimeFactor(  param['critical'] )
-		rows_noblocks = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
+		
+		results = ''
+
+		if check == 'nonblocking' :
+			results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
 				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
-		rows_blocking = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
+		elif check == 'blocking' :
+			results  = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
                                  'user' : param['user'] ,'password' : param['password'] } ,getBlockingVersionQuery(version)  )
+		
+		if results[0] == None :
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+
 		retval = []
-		if rows_noblocking == None and rows_blocking == None : 
-			return '2' + ' ' + 'POSTGRES_NONBLOCKING_LOCKS' + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
 
-		if len(rows_noblocks) > 0 : 	
-			retval.append(iterator(rows_noblocks,'POSTGRES_NONBLOCKING_LOCKS',warning,critical))
-		elif len(rows_blocking) > 0 :
-			retval.append(iterator(rows_blocking,'POSTGRES_BLOCKING_LOCKS',warning,critical))
+		if len(results[1]) > 0 and check == 'nonblocking' : 	
+			retval.append(iterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical))
+		elif len(results[1]) > 0 and check == 'blocking' :
+			retval.append(iterator(results[1],'POSTGRES_BLOCKING_LOCKS',warning,critical))
 		else :
-			retval.append('0' + ' ' + 'POSTGRES_NONBLOCKING_LOCKS' + ' ' + '-' + ' ' + 'OK')
-			retval.append('0' + ' ' + 'POSTGRES_BLOCKING_LOCKS' + ' ' + '-' + ' ' + 'OK')
+			retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK')
 
 		if len(retval) > 0 :
-			return [val for val in retval]
+			return retval[0]
 	else :
-		retval.append('0' + ' ' + 'POSTGRES_NONBLOCKING_LOCKS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check')
-		retval.append('0' + ' ' + 'POSTGRES_BLOCKING_LOCKS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check')
+		retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid parameters passed to check')
+
 		if len(retval) > 0 :
-			return [val for val in retval]
+			return retval[0]
 ## testing the function 
 if __name__ == '__main__' :
         print ( getLocks( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '5min'  , 'critical' : '10min', 'ignoreNonBlocking': 1  } )  )
-
+                         'warning' : '5min'  , 'critical' : '10min', 'check': 'blocking'   } )  )
+# blocking

@@ -50,10 +50,12 @@ def getRelationSizes( param=None ) :
 		critical = fac.getSizeFactor( param['critical'] )
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
-                rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
-		if rows == None : 
-			return '2' + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + ' ' + 'PostgreSQL Server is Down !!!'
+		if results[0] == None : 
+			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]
+
+		rows = results[1]
 
 		if len(rows) > 0 :
                 	for row in rows :
@@ -76,7 +78,7 @@ def getRelationSizes( param=None ) :
                 	status.append(0)
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
         else :
-		return '2' + ' ' + 'POSTGRES_RELATION_SIZE' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
+		return '2' + ' ' + 'POSTGRES_TABLE_SIZE' + ' ' + '-' + ' ' + 'This is a generic failure message for relation size monitoring. Please see the check scripts for further specifics about the failure check(s)'
 
 ## testing the function 
 if __name__ == '__main__' :

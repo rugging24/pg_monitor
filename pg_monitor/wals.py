@@ -19,13 +19,15 @@ def getWALs( param=None ) :
 			) bar \
 			WHERE bar.size >= 16777216" 
 
-                rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 
-		if rows == None : 
-			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'PostgreSQL Server is down !!!'
+		if results[0] == None : 
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 
                 warning = int (param['warning'])
                 critical = int(  param['critical'] )
+
+		rows = results[1]
 		if len(rows) > 0 :
                 	for row in rows :
                         	if perfdata == '-' :

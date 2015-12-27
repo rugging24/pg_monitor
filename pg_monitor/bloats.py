@@ -236,9 +236,11 @@ def getBackends( param=None ) :
 		critical = fac.getSizeFactor(param['critical'])
                 query = getQuery(check,warning[1],warning[0])  
 
-                rows = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
-		if rows == None :
-			return '2' + ' ' + 'POSTGRES_BLOAT_CHECK' + ' ' + '-' + ' ' + 'PostgreSQL Server is Down !!!'
+                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+		if results[0] == None :
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+			
+		rows = results[1]
 
 		if len(rows) > 0 :
                 	for row in rows :
@@ -264,7 +266,7 @@ def getBackends( param=None ) :
 		else : 
 			return '0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK'
         else :
-                return '2' + ' ' + 'POSTGRES_BLOAT_CHECK' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
+                return '2' + ' ' + 'POSTGRES_TABLE_BLOAT' + ' ' + '-' + ' ' + 'This is a generic failure message for the bloat monitoring checks. Please check the script for the failing check(s)'
 ## testing the function 
 if __name__ == '__main__' :
         print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
