@@ -67,6 +67,6 @@ def getBackends( param=None ) :
         else :
                 return '2' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '30'  , 'critical' : '45%'  } )  )
+#if __name__ == '__main__' :
+#        print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+#                         'warning' : '30'  , 'critical' : '45%'  } )  )

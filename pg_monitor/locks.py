@@ -131,7 +131,7 @@ def getLocks( param=None ) :
 		if len(retval) > 0 :
 			return retval[0]
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getLocks( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '5min'  , 'critical' : '10min', 'check': 'blocking'   } )  )
+#if __name__ == '__main__' :
+ #       print ( getLocks( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+  #                       'warning' : '5min'  , 'critical' : '10min', 'check': 'blocking'   } )  )
 # blocking

@@ -13,7 +13,7 @@ def getSQLResult ( connParam  ,query ) :
 	row = None
 	
         try :
-		conn_str = "host={0:s} user={1:s} port={2:s} dbname={3:s} password={4:s}".format( host , user , port , dbname , password )
+		conn_str = "host={0:s} user={1:s} port={2:s} dbname={3:s} password={4:s}".format( host , user , str(port) , dbname , password )
                 conn = pg.connect( conn_str )
                 cur = conn.cursor()
                 cur.execute(query)

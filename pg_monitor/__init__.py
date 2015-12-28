@@ -22,6 +22,7 @@
 
 import argparse
 import defaults
+import monitor as mon
 
 def getArgs() :
 	parse = argparse.ArgumentParser(prog='pg_monitor' ,description = 'Checks for a PostgreSQL server')
@@ -51,7 +52,7 @@ def getArgs() :
 	if check_warning_critical != None :
 		param['warning'] = check_warning_critical['warning']
 		param['critical'] = check_warning_critical['critical'] 
-		print (param)
+		print (mon.getChecks (args.check , param))
 	else : 
 		print ('bad')
 

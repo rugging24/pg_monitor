@@ -84,6 +84,6 @@ def getVacuums( param=None ) :
         else :
                 return '2' + ' ' + 'POSTGRES_AUTOVACUUM' + ' ' + '-' + ' ' + 'This is a generic failure message for vacuuming monitoring checks. Please inpect the check script for details'
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getVacuums( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '2 days'  , 'critical' : '4days', 'check' : 'autovacuum','ignoreNever': 0 } )  )
+#if __name__ == '__main__' :
+#        print ( getVacuums( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+#                         'warning' : '2 days'  , 'critical' : '4days', 'check' : 'autovacuum','ignoreNever': 0 } )  )

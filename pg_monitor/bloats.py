@@ -224,7 +224,7 @@ def getQuery (check,d1,d2) :
 		ORDER BY bloat_bytes DESC;".format( int(d1) , int(d2) )
 
 
-def getBackends( param=None ) :
+def getBloats( param=None ) :
         item_name = 'POSTGRES_'
         status = []
         perfdata = '-'
@@ -268,6 +268,6 @@ def getBackends( param=None ) :
         else :
                 return '2' + ' ' + 'POSTGRES_TABLE_BLOAT' + ' ' + '-' + ' ' + 'This is a generic failure message for the bloat monitoring checks. Please check the script for the failing check(s)'
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '0k'  , 'critical' : '5k', 'check' : 'index_bloat'  } )  )
+#if __name__ == '__main__' :
+ #       print ( getBloats( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+ #                        'warning' : '0k'  , 'critical' : '5k', 'check' : 'index_bloat'  } )  )

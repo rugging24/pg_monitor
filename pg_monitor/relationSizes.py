@@ -81,7 +81,7 @@ def getRelationSizes( param=None ) :
 		return '2' + ' ' + 'POSTGRES_TABLE_SIZE' + ' ' + '-' + ' ' + 'This is a generic failure message for relation size monitoring. Please see the check scripts for further specifics about the failure check(s)'
 
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getRelationSizes( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '3k'  , 'critical' : '5m'  , 'check' : 'table_size' } )  )
+#if __name__ == '__main__' :
+#        print ( getRelationSizes( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+#                         'warning' : '3k'  , 'critical' : '5m'  , 'check' : 'table_size' } )  )
 

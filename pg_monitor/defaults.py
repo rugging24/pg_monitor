@@ -51,3 +51,5 @@ def getDefaults (check , warning , critical ) :
 		# -- warning = 30 sec
 		# -- critical = 1min
 		return None 
+	elif check == 'connections' :
+		return {'warning':'dummy', 'critical' :'dummy'}	

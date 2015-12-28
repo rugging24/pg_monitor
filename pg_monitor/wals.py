@@ -43,7 +43,7 @@ def getWALs( param=None ) :
         else :
                 return '2' + ' ' + 'POSTGRES_WALS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '2%'  , 'critical' : '100%'  } )  )
+#if __name__ == '__main__' :
+#        print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
+#                         'warning' : '2%'  , 'critical' : '100%'  } )  )
 

@@ -49,5 +49,5 @@ def getConnections( param=None ) :
         else :
                 return '2' + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
-if __name__ == '__main__' :
-        print ( getConnections( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '' } )  )
+#if __name__ == '__main__' :
+#        print ( getConnections( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '' } )  )
