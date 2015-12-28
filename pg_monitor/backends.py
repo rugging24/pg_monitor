@@ -3,24 +3,11 @@
 import sys
 import checkStatus as st
 import sql
-import math 
+import factors as fac
 
 # var=val;warn;crit;min;max
 # check_mk output format 
 # status 	item_name	perfdata	output
-
-def getLimits( limit, total ) :
-	if limit != None :
-		pLimit = limit.split('or')
-		nperc = 0
-		wperc = 0
-		for ele in pLimit :
-			if ele.find('%') == -1 :
-				nperc = int( ele.replace(' ','') )
-			elif ele.find('%') != -1 :
-				wperc = math.ceil( ( float ( ele.replace('%','').replace(' ','') ) / 100 ) * total )
-		
-		return int (max( nperc, wperc ))
 
 
 def getBackends( param=None ) :
@@ -29,6 +16,8 @@ def getBackends( param=None ) :
 	perfdata = '-'
 	output = ''
 	if param != None :
+		
+
                 query = "SELECT \
 			      dbs.datname, \
                               ( current_setting('max_connections')::int - current_setting('superuser_reserved_connections')::int ) as max_allowed_connect,\
@@ -50,8 +39,8 @@ def getBackends( param=None ) :
 		rows = results[1]
 		if len(rows[1]) > 0  :
 			max_connect = rows[0][1]
-			warning = getLimits(  param['warning'] , max_connect )
-			critical = getLimits(  param['critical'] , max_connect )
+			warning = fac.getNumberPercentLimits(  param['warning'] , max_connect )
+			critical = fac.getNumberPercentLimits(  param['critical'] , max_connect )
 			for row in rows :
 				if int(row[2]) != 0 :
 					if perfdata == '-' :
@@ -69,7 +58,6 @@ def getBackends( param=None ) :
                                         	perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
                                         	output =  output + ';No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
 					status.append(2)
-
 			status.append( st.getStatus( int(connect_sum),int(warning) , int(critical), int('0') , int(max_connect)  ) )
 			
 			status.sort( reverse=True )
@@ -82,4 +70,3 @@ if __name__ == '__main__' :
                          'warning' : '30'  , 'critical' : '45%'  } )  ) 
 
 
-#	print ( getBackends( {'warning' : {'postgres' :0, 'gitlab' :10,'pgbench' : 0,'results' :10} , 'critical' : {'postgres' :0, 'gitlab' :10,'pgbench' : 0,'results' :10} , 'host' : {'postgres' :'localhost', 'gitlab' :'localhost','pgbench' : 'localhost','results' : 'localhost'},'dbname' : ['postgres', 'gitlab','pgbench', 'results'] , 'user' : {'postgres' :'postgres', 'gitlab' :'postgres','pgbench' : 'postgres','results' : 'postgres'} , 'password' : {'postgres' :'', 'gitlab' :'','pgbench' : '','results' : ''} }  ) )

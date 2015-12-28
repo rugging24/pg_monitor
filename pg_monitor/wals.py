@@ -2,6 +2,7 @@
 
 import sql 
 import checkStatus as st
+import factors as fac
 
 def getWALs( param=None ) :
         item_name = 'POSTGRES_WALS'
@@ -24,14 +25,14 @@ def getWALs( param=None ) :
 		if results[0] == None : 
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 
-                warning = int (param['warning'])
-                critical = int(  param['critical'] )
 
 		rows = results[1]
 		if len(rows) > 0 :
+			warning = fac.getNumberPercentLimits( param['warning'], rows[0][1])
+			critical = fac.getNumberPercentLimits( param['critical'], rows[0][1])
                 	for row in rows :
                         	if perfdata == '-' :
-                                	perfdata = 'WALS' + '=' + str(row[0]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
+                                	perfdata = 'WALS' + '=' + str(row[0]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str( int(row[1]) )
                                 	output =  '{0:s} WAL file(s) found'.format( str(row[0]) )
 	                	status.append( st.getStatus( row[0],int(warning) , int(critical), int('1') , int(row[1])  ) )
 
@@ -44,5 +45,5 @@ def getWALs( param=None ) :
 ## testing the function 
 if __name__ == '__main__' :
         print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-                         'warning' : '20'  , 'critical' : '30'  } )  )
+                         'warning' : '2%'  , 'critical' : '100%'  } )  )
 
