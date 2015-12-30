@@ -38,6 +38,6 @@ def getArgs(param) :
 			print ('Invalid command line arguments')
 			sys.exit(0)
 
-if __name__ == '__main__' :
-	getArgs()
+#if __name__ == '__main__' :
+#	getArgs()
 	
