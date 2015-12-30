@@ -24,5 +24,6 @@ setup(name='pg_monitor',
       install_requires=[
           'psycopg2',
       ],
+      scripts=['bin/pg_monitor'],
       include_package_data=True,
       zip_safe=False)
