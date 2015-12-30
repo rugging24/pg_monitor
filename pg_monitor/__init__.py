@@ -24,6 +24,7 @@ import defaults
 import monitor
 import sys
 
+
 def getArgs(param) :
 	if param != None :	
 		warning = param.get('warning')
@@ -35,6 +36,8 @@ def getArgs(param) :
 			param['critical'] = check_warning_critical['critical'] 
 			print (monitor.getChecks (param))
 		else : 
+			if param['check'] in ['checkpoints','table_size','index_size', 'database_size','table_bloat','index_bloat' ] :
+				print ('This check requires warning and/or critical value(s) to be correctly stated.')
 			print ('Invalid command line arguments')
 			sys.exit(0)
 
