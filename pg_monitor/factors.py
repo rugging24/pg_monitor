@@ -98,6 +98,7 @@ def getNumberPercentMix (warning, critical, defaultWarn, defaultCritical ) :
         if checkDigit(warn.split('or'))  and checkDigit(crit.split('or'))  :
                 return retval
         else :
+		print ('neither warning nor critical value is provided for this check. Please provide both or at least a warning and/or critical value')
                 return None
 
 
@@ -115,6 +116,7 @@ def warningAndOrCriticalProvided (warning,critical, multiplier) :
                         return None
                 return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : str( int( math.ceil( int(warning[0]) / multiplier ) ) ) + warning[2][0] }
         else :
+		print ('neither warning nor critical value is provided for this check. Please provide both or at least a warning and/or critical value')
                 return None
 
 
@@ -132,5 +134,6 @@ def getTimeDefaults (warning, critical , defaultWarning, defaultCritical, multip
                         retval.update( {'critical' : str(crit[0]) + str(crit[2]) }  )
                         return retval
                 else :
+			print ('neither warning nor critical value is provided for this check. Please provide both or at least a warning and/or critical value')
                         return None
 
