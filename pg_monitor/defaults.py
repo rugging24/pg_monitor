@@ -39,6 +39,7 @@ def getDefaults (check , warning , critical ) :
 		return fac.warningAndOrCriticalProvided (warning,critical,0.8)
 	elif check == 'table_size' or check == 'index_size' or check == 'database_size' :
 		# warning and/or critical value must be supplied
+		print ('neither warning nor critical value is provided for this check. Please provide both or at least a warning and/or critical value')
 		return fac.warningAndOrCriticalProvided (warning,critical,0.5) 
 	elif check == 'nonblocking' or check == 'blocking' :
 		# --warning = 2min
