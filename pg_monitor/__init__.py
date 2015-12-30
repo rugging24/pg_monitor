@@ -26,7 +26,9 @@ import sys
 
 def getArgs(param) :
 	if param != None :	
-		check_warning_critical = defaults.getDefaults (param['check'], param['warning'], param['critical'] )
+		warning = param.get('warning')
+		critical = param.get('critical')
+		check_warning_critical = defaults.getDefaults (param['check'], warning, critical )
 
 		if check_warning_critical != None :
 			param['warning'] = check_warning_critical['warning']
