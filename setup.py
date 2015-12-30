@@ -7,11 +7,11 @@ def readme():
         return f.read()
 
 setup(name='pg_monitor',
-      version='1.2',
+      version='1.3',
       description='PostgreSQL monitoring checks',
       long_description=readme(),
       classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
         'Topic :: System :: Networking :: Monitoring',

@@ -9,7 +9,8 @@ import relationSizes as rel
 import vacuum as vac
 import wals
 
-def getChecks (check , param) :
+def getChecks (param) :
+	check = param['check']
         if check == 'backends' :
                 return bac.getBackends (param)
         elif check == 'wals' :

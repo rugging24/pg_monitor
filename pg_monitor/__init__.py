@@ -22,17 +22,17 @@
 # find param : ipl_api.init_de_request
 import argparse
 import defaults
-import monitor as mon
+import monitor
 import sys
 
 def getArgs(param) :
 	if param != None :	
-		check_warning_critical = defaults.getDefaults (args.check, args.warning, args.critical )
+		check_warning_critical = defaults.getDefaults (param['check'], param['warning'], param['critical'] )
 
 		if check_warning_critical != None :
 			param['warning'] = check_warning_critical['warning']
 			param['critical'] = check_warning_critical['critical'] 
-			print (mon.getChecks (args.check , param))
+			print (monitor.getChecks (param))
 		else : 
 			print ('Invalid command line arguments')
 			sys.exit(0)
