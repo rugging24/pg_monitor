@@ -56,7 +56,7 @@ def getBlockingVersionQuery (version) :
    		JOIN pg_catalog.pg_stat_activity ka ON ka.{1:s} = kl.pid \
   		WHERE NOT bl.GRANTED;".format( query, pid)
 
-def getBlockingIterator(rows,item_name) :
+def getBlockingIterator(rows,item_name,findText) :
         perfdata = '-'
         output = ''
         for row in rows :
@@ -69,10 +69,11 @@ def getBlockingIterator(rows,item_name) :
 			output =  output + ';{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:d} \n Blocked Query : \n {6:s} \
                                    \n Blocking Query : \n {7:s }'.format(row[8], row[7], row[2], row[4], row[5],row[9], row[0], row[1]  )
 
-		if str(row[0]).find('ipl_api.init_de_request') != -1 :
-			status.append(2)
-		else : 
-			status.append(1)
+		for txt in findText :
+			if str(row[0]).find(txt) != -1 :
+				status.append(2)
+			else :
+				status.append(1)
         status.sort( reverse=True )
         return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 
@@ -98,6 +99,7 @@ def getLocks( param=None ) :
         output = ''
         if param != None :
 		check = (param['check']).lower()
+		findText = param['find']
 		item_name = item_name + check.upper() + '_LOCKS'
 		query = "SELECT substring(version() FROM '(\d.\d)')"
                 results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
@@ -128,7 +130,7 @@ def getLocks( param=None ) :
 		if len(results[1]) > 0 and check == 'nonblocking' : 	
 			retval.append(getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical))
 		elif len(results[1]) > 0 and check == 'blocking' :
-			retval.append(getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS'))
+			retval.append(getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS',findText))
 		else :
 			retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK')
 

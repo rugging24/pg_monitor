@@ -19,7 +19,7 @@
 # duplicate_indexes
 # replica_lag
 
-
+# find param : ipl_api.init_de_request
 import argparse
 import defaults
 import monitor as mon
@@ -55,6 +55,7 @@ def getArgs() :
 	parse.add_argument ( '--check', type=str, required=True, choices=['backends','connections','wals','vacuum','autovacuum','analyze','autoanalyze',\
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
                               'duplicate_indexes','replica_lag'], help=getDescText() )
+	parse.add_argument ('--find' , type=str , nargs='+',default=[], help = 'Finding partterns in locks')
 	parse.add_argument ( '--warning', type=str, help='Values to be considered as warning signs ' )
 	parse.add_argument ( '--critical', type=str , help='Values for the critical checks') 
 	# assign all arguments to an array
@@ -67,6 +68,8 @@ def getArgs() :
 	param['password'] = args.password 
 	param['dbname'] = args.dbname 
 	param['check'] = args.check 
+	param['find'] =	args.find
+	
 	
 	check_warning_critical = defaults.getDefaults (args.check, args.warning, args.critical )
 
