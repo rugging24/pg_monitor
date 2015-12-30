@@ -48,7 +48,6 @@ optional arguments:
 			** checkpoints -->> Monitors checkpoint frequency 
 			** duplicate_indexes -->> Monitors indexes and report duplicates
                         ** replica_lag -->> Monitors all replicas connected to a given master
-
   --find FIND [FIND ...] Finding partterns in locks
   --warning WARNING     Values to be considered as warning signs
   --critical CRITICAL   Values for the critical checks
