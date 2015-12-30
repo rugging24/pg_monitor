@@ -36,8 +36,8 @@ def runMonitor() :
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
                               'duplicate_indexes','replica_lag'], help=getDescText() )
         parse.add_argument ('--find' , type=str , nargs='+',default=[], help = 'Finding partterns in locks')
-        parse.add_argument ( '--warning', type=str, help='Values to be considered as warning signs ' )
-        parse.add_argument ( '--critical', type=str , help='Values for the critical checks')
+        parse.add_argument ( '--warning', type=str, default =None, help='Values to be considered as warning signs ' )
+        parse.add_argument ( '--critical', type=str , default=None ,help='Values for the critical checks')
         # assign all arguments to an array
         args = parse.parse_args()
         # Get the individual arguments
@@ -49,6 +49,8 @@ def runMonitor() :
         param['dbname'] = args.dbname
         param['check'] = args.check
         param['find'] = args.find
+	param['warning'] = args.warning
+	param['critical'] = args.critical
 
 	pg_monitor.getArgs(param)
 

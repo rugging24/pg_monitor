@@ -20,7 +20,6 @@
 # replica_lag
 
 # find param : ipl_api.init_de_request
-import argparse
 import defaults
 import monitor
 import sys
