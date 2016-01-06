@@ -47,7 +47,7 @@ def getBackends( param=None ) :
         			AND userdex.indexrelname = pg_indexes.indexname \
 			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname ;" 
 
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None : 
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 		
@@ -64,8 +64,6 @@ def getBackends( param=None ) :
 		else :
 			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'
 
-        else :
-                return '2' + ' ' + 'POSTGRES_DUPLICATE_INDEXES' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
 #if __name__ == '__main__' :
 #        print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

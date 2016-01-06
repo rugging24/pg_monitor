@@ -236,7 +236,7 @@ def getBloats( param=None ) :
 		critical = fac.getSizeFactor(param['critical'])
                 query = getQuery(check,warning[1],warning[0])  
 
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 			
@@ -265,8 +265,6 @@ def getBloats( param=None ) :
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else : 
 			return '0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK'
-        else :
-                return '2' + ' ' + 'POSTGRES_TABLE_BLOAT' + ' ' + '-' + ' ' + 'This is a generic failure message for the bloat monitoring checks. Please check the script for the failing check(s)'
 ## testing the function 
 #if __name__ == '__main__' :
  #       print ( getBloats( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

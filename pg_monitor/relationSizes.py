@@ -50,7 +50,7 @@ def getRelationSizes( param=None ) :
 		critical = fac.getSizeFactor( param['critical'] )
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None : 
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]
@@ -77,8 +77,6 @@ def getRelationSizes( param=None ) :
 		elif len(rows) == 0 :
                 	status.append(0)
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-        else :
-		return '2' + ' ' + 'POSTGRES_TABLE_SIZE' + ' ' + '-' + ' ' + 'This is a generic failure message for relation size monitoring. Please see the check scripts for further specifics about the failure check(s)'
 
 ## testing the function 
 #if __name__ == '__main__' :

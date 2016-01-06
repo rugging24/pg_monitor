@@ -16,8 +16,11 @@ def getConnections( param=None ) :
                          FROM \
                               pg_database \
                          WHERE datistemplate is FALSE"
+	
+		host = param['host'][0]
+		port = param['port'][0]
 
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None :
 			return '2' + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + ' ' + results[1]
 	
@@ -26,7 +29,7 @@ def getConnections( param=None ) :
 		for db in dbs :
 			query = "select version()"
 			begin = time.time()
-			row = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': db[0], 'user' : param['user'] ,'password' : param['password'] } ,query )
+			row = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': db[0], 'user' : param['user'] ,'password' : param['password'] } ,query )
 			duration = int ( math.ceil ( ( time.time() - begin ) * 1000 ) )
 			out_add = 'connection test took {0:s} ms '
 			if row != None :
@@ -46,8 +49,6 @@ def getConnections( param=None ) :
 
                 status.sort( reverse=True )
                 return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-        else :
-                return '2' + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + 'Invalid parameters passed to check'
 ## testing the function 
 #if __name__ == '__main__' :
 #        print ( getConnections( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '' } )  )

@@ -30,7 +30,7 @@ def getBackends( param=None ) :
                          WHERE \
 				db.datistemplate IS FALSE "
 				
-		results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
 
 		if results[0] == None :
@@ -62,8 +62,6 @@ def getBackends( param=None ) :
 			
 			status.sort( reverse=True )
 			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-	else :
-		return '2' + ' ' + 'POSTGRES_BACKENDS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
 #if __name__ == '__main__' :
 #	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

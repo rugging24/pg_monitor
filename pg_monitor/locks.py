@@ -101,8 +101,12 @@ def getLocks( param=None ) :
 		check = (param['check']).lower()
 		findText = param['find']
 		item_name = item_name + check.upper() + '_LOCKS'
+		
+		host = param['host'][0]
+		port = param['port'][0]
+
 		query = "SELECT substring(version() FROM '(\d.\d)')"
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None :
                         return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
@@ -116,10 +120,10 @@ def getLocks( param=None ) :
 		results = ''
 
 		if check == 'nonblocking' :
-			results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
+			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
 				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
 		elif check == 'blocking' :
-			results  = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres',\
+			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
                                  'user' : param['user'] ,'password' : param['password'] } ,getBlockingVersionQuery(version)  )
 		
 		if results[0] == None :

@@ -20,7 +20,7 @@ def getWALs( param=None ) :
 			) bar \
 			WHERE bar.size >= 16777216" 
 
-                results = sql.getSQLResult ( {'host': param['host'] , 'port' : param['port'], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 
 		if results[0] == None : 
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
@@ -40,8 +40,6 @@ def getWALs( param=None ) :
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'No WAL file found, at least One WAL file should be present.'
-        else :
-                return '2' + ' ' + 'POSTGRES_WALS' + ' ' + '-' + ' ' + 'Invalid parameters passed to check'
 ## testing the function 
 #if __name__ == '__main__' :
 #        print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\

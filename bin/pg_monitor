@@ -27,11 +27,11 @@ def getDescText () :
 
 def runMonitor() :
         parse = argparse.ArgumentParser(prog='pg_monitor' ,description = 'Checks for a PostgreSQL server')
-        parse.add_argument ('--port' , type=int , default=5432 , help='Port of the database to be accessed. Default:  %(default)s')
+        parse.add_argument ('--port' , type=int , default=[5432] , nargs='+', help='Port of the database to be accessed. Default:  %(default)s')
         parse.add_argument ( '--user' , type=str , default='postgres', help='Username allowed to access the database. Default:  %(default)s')
         parse.add_argument ('--password', type=str , default='' , help='Password of the supplied user. Default:  %(default)s' )
         parse.add_argument ( '--dbname', type=str , default='postgres', help='The name of the database to be accessed. Default:  %(default)s'  )
-        parse.add_argument ( '--host', type=str , default='localhost', help='Host of the database. Default:  %(default)s' )
+        parse.add_argument ( '--host', type=str , default=['localhost'], nargs='+' ,help='Host of the database. Default:  %(default)s' )
         parse.add_argument ( '--check', type=str, required=True, choices=['backends','connections','wals','vacuum','autovacuum','analyze','autoanalyze',\
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
                               'duplicate_indexes','replica_lag'], help=getDescText() )
