@@ -27,7 +27,7 @@ def getDescText () :
 
 def runMonitor() :
         parse = argparse.ArgumentParser(prog='pg_monitor' ,description = 'Checks for a PostgreSQL server')
-        parse.add_argument ('--port' , type=list , default=[5432] , nargs='+', help='Port of the database to be accessed. Default:  %(default)s')
+        parse.add_argument ('--port' , type=str , default=[5432] , nargs='+', help='Port of the database to be accessed. Default:  %(default)s')
         parse.add_argument ( '--user' , type=str , default='postgres', help='Username allowed to access the database. Default:  %(default)s')
         parse.add_argument ('--password', type=str , default='' , help='Password of the supplied user. Default:  %(default)s' )
         parse.add_argument ( '--dbname', type=str , default='postgres', help='The name of the database to be accessed. Default:  %(default)s'  )
@@ -54,6 +54,7 @@ def runMonitor() :
 
 	print (args.host)
 	print (args.port)
+	print (args.find )
 
 	pg_monitor.getArgs(param)
 
