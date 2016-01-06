@@ -42,8 +42,14 @@ def runMonitor() :
         args = parse.parse_args()
         # Get the individual arguments
         param = {}
-        param['host'] = str( args.host ).split(',')
-        param['port'] = str( args.port ).split(',')
+	host = str( args.host ).split(',')
+	port = str( args.port ).split(',')
+	if len (host) != len(port) :
+		print ('Miss-match array size of the host and port was specified. Please correct this and try again')
+		sys.exit(0)
+
+        param['host'] = host
+        param['port'] = port
         param['user'] = args.user
         param['password'] = args.password
         param['dbname'] = args.dbname
@@ -52,9 +58,6 @@ def runMonitor() :
 	param['warning'] = args.warning
 	param['critical'] = args.critical
 
-	print (str (args.host ).split(','))
-	print ( str( args.port ).split(',') )
-	print (str(args.find ).split(',') )
 
 	pg_monitor.getArgs(param)
 
