@@ -3,11 +3,11 @@
 from setuptools import setup
 
 def readme():
-    with open('README.md') as f:
+    with open('README.txt') as f:
         return f.read()
 
 setup(name='pg_monitor',
-      version='1.4.18',
+      version='1.4.19',
       description='PostgreSQL monitoring checks',
       long_description=readme(),
       classifiers=[
