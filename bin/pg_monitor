@@ -2,6 +2,7 @@
 
 import pg_monitor
 import argparse
+import sys
 
 def getDescText () :
         return "Options to be passed as checks \n\n \
