@@ -95,7 +95,7 @@ def getNumberPercentMix (warning, critical, defaultWarn, defaultCritical ) :
         retval.update ({'warning' : warn})
         retval.update ({'critical' : crit})
 
-        if checkDigit(warn.split('or'))  and checkDigit(crit.split('or'))  :
+        if checkDigit(warn.split('or'))  and checkDigit(crit.split('or'))  : 
                 return retval
         else :
                 return None

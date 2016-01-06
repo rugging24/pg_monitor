@@ -8,6 +8,7 @@ import locks as loc
 import relationSizes as rel
 import vacuum as vac
 import wals
+import replicaLag as rep
 
 def getChecks (param) :
 	check = param['check']
@@ -26,6 +27,6 @@ def getChecks (param) :
         elif check == 'checkpoints' :
 		return None
         elif check == 'replica_lag' :
-		return None 
+		return rep.getReplicaLags(param) 
 	elif check == 'connections' :
 		return con.getConnections(param)

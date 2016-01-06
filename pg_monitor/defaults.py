@@ -48,8 +48,8 @@ def getDefaults (check , warning , critical ) :
 		# warning and/or critical value must be supplied
 		return None
 	elif check == 'replica_lag' :
-		# -- warning = 30 sec
-		# -- critical = 1min
-		return None 
+		# -- warning = 5 wal files
+		# -- critical = 10 wal files 
+		return fac.getNumberPercentMix (warning, critical, '5', '10' ) 
 	elif check == 'connections' :
 		return {'warning':'dummy', 'critical' :'dummy'}	
