@@ -27,11 +27,11 @@ def getDescText () :
 
 def runMonitor() :
         parse = argparse.ArgumentParser(prog='pg_monitor' ,description = 'Checks for a PostgreSQL server')
-        parse.add_argument ('--port' , type=str , default=5432 , nargs='+', help='Port of the database to be accessed. Default:  %(default)s')
+        parse.add_argument ('--port' , type=str , default=5432 , nargs='*', help='Port of the database to be accessed. Default:  %(default)s')
         parse.add_argument ( '--user' , type=str , default='postgres', help='Username allowed to access the database. Default:  %(default)s')
         parse.add_argument ('--password', type=str , default='' , help='Password of the supplied user. Default:  %(default)s' )
         parse.add_argument ( '--dbname', type=str , default='postgres', help='The name of the database to be accessed. Default:  %(default)s'  )
-        parse.add_argument ( '--host', type=str , default='localhost', nargs='+' ,help='Host of the database. Default:  %(default)s' )
+        parse.add_argument ( '--host', type=str , default='localhost', nargs='?' ,help='Host of the database. Default:  %(default)s' )
         parse.add_argument ( '--check', type=str, required=True, choices=['backends','connections','wals','vacuum','autovacuum','analyze','autoanalyze',\
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
                               'duplicate_indexes','replica_lag'], help=getDescText() )
@@ -42,19 +42,19 @@ def runMonitor() :
         args = parse.parse_args()
         # Get the individual arguments
         param = {}
-        param['host'] = str(args.host).split(',')
-        param['port'] = str(args.port).split(',')
+        param['host'] = args.host
+        param['port'] = args.port
         param['user'] = args.user
         param['password'] = args.password
         param['dbname'] = args.dbname
         param['check'] = args.check
-        param['find'] = str(args.find).split(',')
+        param['find'] = args.find
 	param['warning'] = args.warning
 	param['critical'] = args.critical
 
-	print (str(args.host).split(','))
-	print (str(args.port).split(','))
-	print (str(args.find).split(',') )
+	print (args.host)
+	print (args.port)
+	print (args.find )
 
 	pg_monitor.getArgs(param)
 
