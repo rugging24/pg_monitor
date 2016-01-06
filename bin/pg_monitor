@@ -52,6 +52,9 @@ def runMonitor() :
 	param['warning'] = args.warning
 	param['critical'] = args.critical
 
+	print (args.host)
+	print (args.port)
+
 	pg_monitor.getArgs(param)
 
 
