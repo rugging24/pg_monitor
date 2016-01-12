@@ -105,14 +105,14 @@ def getLocks( param=None ) :
 		host = param['host'][0]
 		port = param['port'][0]
 
-		query = "SELECT substring(version() FROM '(\d.\d)')"
+		query = "SELECT substring(version() FROM '(\d.\d)')::double precision"
                 results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None :
                         return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 		
 
-		version = int( (results[1])[0][0] )
+		version = (results[1])[0][0]
 		
 		warning = fac.getTimeFactor(  param['warning'] )
 		critical = fac.getTimeFactor(  param['critical'] )
