@@ -235,13 +235,13 @@ def getBloats( param=None ) :
 		warning = fac.getSizeFactor(param['warning'])
 		critical = fac.getSizeFactor(param['critical'])
                 query = getQuery(check,warning[1],warning[0])  
-
+		
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 			
 		rows = results[1]
-
+		print (rows)
 		if len(rows) > 0 :
                 	for row in rows :
                                 out_unit = ''
@@ -267,5 +267,5 @@ def getBloats( param=None ) :
 			return '0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK'
 ## testing the function 
 #if __name__ == '__main__' :
- #       print ( getBloats( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
- #                        'warning' : '0k'  , 'critical' : '5k', 'check' : 'index_bloat'  } )  )
+#        print ( getBloats( {'host' : ['localhost'], 'port' : ['5432'] ,'user' : 'postgres' , 'password' : '',\
+#                         'warning' : '1g'  , 'critical' : '5g', 'check' : 'index_bloat'  } )  )
