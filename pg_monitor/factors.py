@@ -114,6 +114,12 @@ def warningAndOrCriticalProvided (warning,critical, multiplier) :
                 if warning == None :
                         return None
                 return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : str( int( math.ceil( int(warning[0]) / multiplier ) ) ) + warning[2][0] }
+	elif warning != None and critical != None :
+		critical = getSizeFactor ( critical )
+		warning = getSizeFactor ( warning )
+		if warning == None or critical == None :
+			return None
+		return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : str( critical[0] ) + critical[2][0] }
         else :
                 return None
 
