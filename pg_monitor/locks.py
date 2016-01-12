@@ -112,7 +112,7 @@ def getLocks( param=None ) :
                         return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 		
 
-		version = (results[1])[0][0]
+		version = int( (results[1])[0][0] )
 		
 		warning = fac.getTimeFactor(  param['warning'] )
 		critical = fac.getTimeFactor(  param['critical'] )

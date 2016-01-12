@@ -21,8 +21,8 @@ def convertHex2Dec (hexa) :
 
 def computeMegaByteDiff (master , replica ) :
 	multiplier = convertHex2Dec('FF000000')
-	byte = ( multiplier * convertHex2Dec( str(master[0]).split('/')[0] )  + convertHex2Dec( str(master[0]).split('/')[1] ) )  - \
-		( multiplier * convertHex2Dec( str(replica[0]).split('/')[0] )  + convertHex2Dec( str(replica[0]).split('/')[1] ) ) 
+	byte = ( multiplier * convertHex2Dec( str(master[0][0]).split('/')[0] )  + convertHex2Dec( str(master[0][0]).split('/')[1] ) )  - \
+		( multiplier * convertHex2Dec( str(replica[0][0]).split('/')[0] )  + convertHex2Dec( str(replica[0][0]).split('/')[1] ) ) 
 	return int( math.ceil(byte / (1024 ** 2)) )
 
 #if __name__ == '__main__' :

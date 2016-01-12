@@ -17,7 +17,12 @@ def getBackends( param=None ) :
 	output = ''
 	if param != None :
 		
-
+		exclude = param.get('exclude') if param.get('exclude') != None else ''
+		excdb = ''
+		if exclude != '' :
+			for exc in exclude :
+				excdb = ' AND dbs.datname <> ' + "'" + exc + "'"  	
+		 
                 query = "SELECT \
 			      dbs.datname, \
                               ( current_setting('max_connections')::int - current_setting('superuser_reserved_connections')::int ) as max_allowed_connect,\
@@ -28,7 +33,7 @@ def getBackends( param=None ) :
                          JOIN \
 				pg_database db on db.datname = dbs.datname \
                          WHERE \
-				db.datistemplate IS FALSE "
+				db.datistemplate IS FALSE {0:s} ".format(excdb)
 				
 		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
@@ -37,7 +42,7 @@ def getBackends( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + str(results[1])
 
 		rows = results[1]
-		if len(rows[1]) > 0  :
+		if len(rows) > 0  :
 			max_connect = rows[0][1]
 			warning = fac.getNumberPercentLimits(  param['warning'] , max_connect )
 			critical = fac.getNumberPercentLimits(  param['critical'] , max_connect )
@@ -64,7 +69,7 @@ def getBackends( param=None ) :
 			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 ## testing the function 
 #if __name__ == '__main__' :
-#	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
- #                        'warning' : '30'  , 'critical' : '45%'  } )  ) 
+#	print ( getBackends( {'host' : ['localhost'], 'port' : ['5432'] ,'user' : 'postgres' , 'password' : '',\
+#                        'warning' : '30'  , 'critical' : '45%'  } )  ) 
 
 

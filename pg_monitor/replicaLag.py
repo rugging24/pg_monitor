@@ -60,8 +60,8 @@ def getReplicaLags( param=None ) :
 
 
 ## testing the function 
-#if __name__ == '__main__' :
-#	print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
- #                        'warning' : '30'  , 'critical' : '45%'  } )  ) 
+if __name__ == '__main__' :
+	print ( getReplicaLags( {'host' : ['localhost','localhost'], 'port' : ['5432','5432'] ,'user' : 'postgres' , 'password' : '',\
+                        'warning' : '3'  , 'critical' : '4'  } )  ) 
 
 
