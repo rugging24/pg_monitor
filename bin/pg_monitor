@@ -37,6 +37,7 @@ def runMonitor() :
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
                               'duplicate_indexes','replica_lag'], help=getDescText() )
         parse.add_argument ('--find' , type=str , nargs='?',default='', help = 'Finding partterns in locks')
+	parse.add_argument ('--exclude' , type=str , nargs='?',default='', help = 'Excluding database or other patterns not to be searched for')
         parse.add_argument ( '--warning', type=str, default =None, help='Values to be considered as warning signs ' )
         parse.add_argument ( '--critical', type=str , default=None ,help='Values for the critical checks')
         # assign all arguments to an array
@@ -58,6 +59,7 @@ def runMonitor() :
         param['find'] = str( args.find ).split(',')
 	param['warning'] = args.warning
 	param['critical'] = args.critical
+	param['exclude'] = args.exclude
 
 
 	pg_monitor.getArgs(param)
