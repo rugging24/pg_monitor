@@ -45,16 +45,16 @@ def getBlockingVersionQuery (version) :
                         bl.locktype     AS blocked_type, \
                         ka.usename      AS blocking_user, \
                         kl.pid		AS blocking_pid, \
-                        date_part('epoch',now()::timestamp - ka.query_start::timestamp)/60 blocking_time, \
+                        date_part('epoch',clock_timestamp()::timestamp - ka.query_start::timestamp) blocking_time, \
                         bl.pid          AS blocked_pid, \
                         a.usename       AS blocked_user, \
-                        date_part('epoch',now()::timestamp - a.query_start::timestamp)/60  waiting_time \
+                        date_part('epoch',clock_timestamp()::timestamp - a.query_start::timestamp)  waiting_time \
   		FROM  \
 			pg_catalog.pg_locks         bl \
    		JOIN pg_catalog.pg_stat_activity a  ON a.{1:s} = bl.pid \
    		JOIN pg_catalog.pg_locks         kl ON kl.transactionid = bl.transactionid AND kl.pid != bl.pid \
    		JOIN pg_catalog.pg_stat_activity ka ON ka.{1:s} = kl.pid \
-  		WHERE NOT bl.GRANTED;".format( query, pid)
+  		WHERE NOT bl.GRANTED;".format( query , pid)
 
 def getBlockingIterator(rows,item_name,findText) :
         perfdata = '-'
