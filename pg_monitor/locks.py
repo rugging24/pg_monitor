@@ -117,7 +117,10 @@ def getLocks( param=None ) :
 		warning = fac.getTimeFactor(  param['warning'] )
 		critical = fac.getTimeFactor(  param['critical'] )
 		
-		results = ''
+		results = []
+
+		print (sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
+                                 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  ))
 
 		if check == 'nonblocking' :
 			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
