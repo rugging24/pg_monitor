@@ -101,12 +101,13 @@ def getLocks( param=None ) :
 		check = (param['check']).lower()
 		findText = param['find']
 		item_name = item_name + check.upper() + '_LOCKS'
+		dbname = param['dbname']
 		
 		host = param['host'][0]
 		port = param['port'][0]
 
 		query = "SELECT substring(version() FROM '(\d.\d)')::double precision"
-                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None :
                         return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
@@ -119,23 +120,19 @@ def getLocks( param=None ) :
 		
 		results = []
 
-		print (sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
-                                 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  ))
 
 		if check == 'nonblocking' :
-			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
+			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
 				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
 		elif check == 'blocking' :
-			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
+			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
                                  'user' : param['user'] ,'password' : param['password'] } ,getBlockingVersionQuery(version)  )
-			print ( getBlockingVersionQuery(version) )
 
 		if results[0] == None :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 
 		retval = []
 		
-		print (results)
 
 		if len(results[1]) > 0 and check == 'nonblocking' : 	
 			retval.append(getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical))

@@ -20,7 +20,7 @@ def getWALs( param=None ) :
 			) bar \
 			WHERE bar.size >= 16777216" 
 
-                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 
 		if results[0] == None : 
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]

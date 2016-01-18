@@ -35,7 +35,7 @@ def getBackends( param=None ) :
                          WHERE \
 				db.datistemplate IS FALSE {0:s} ".format(excdb)
 				
-		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
 
 		if results[0] == None :

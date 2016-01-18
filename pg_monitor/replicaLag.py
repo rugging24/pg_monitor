@@ -25,7 +25,7 @@ def getReplicaLags( param=None ) :
 		
 		master_host = param['host'][0]
 
-		master = sql.getSQLResult ( {'host': master_host , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		master = sql.getSQLResult ( {'host': master_host , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		
 		
 		if master[0] == None :
@@ -33,7 +33,7 @@ def getReplicaLags( param=None ) :
 
 		counter = 1
 		for rep_host in param['host'][1:] :
-			replica = sql.getSQLResult ( {'host': rep_host , 'port' : param['port'][counter], 'dbname': 'postgres'\
+			replica = sql.getSQLResult ( {'host': rep_host , 'port' : param['port'][counter], 'dbname': param['dbname'] \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
 			if replica[0] == 0 :
 				wal_lag = hexa.computeMegaByteDiff ( master[1] , replica[1] ) / 16
@@ -60,8 +60,8 @@ def getReplicaLags( param=None ) :
 
 
 ## testing the function 
-if __name__ == '__main__' :
-	print ( getReplicaLags( {'host' : ['localhost','localhost'], 'port' : ['5432','5432'] ,'user' : 'postgres' , 'password' : '',\
-                        'warning' : '3'  , 'critical' : '4'  } )  ) 
+#if __name__ == '__main__' :
+#	print ( getReplicaLags( {'host' : ['localhost','localhost'], 'port' : ['5432','5432'] ,'user' : 'postgres' , 'password' : '',\
+#                        'warning' : '3'  , 'critical' : '4'  } )  ) 
 
 

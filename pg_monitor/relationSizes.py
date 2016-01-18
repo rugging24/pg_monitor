@@ -50,7 +50,7 @@ def getRelationSizes( param=None ) :
 		critical = fac.getSizeFactor( param['critical'] )
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
-                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None : 
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]

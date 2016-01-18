@@ -20,7 +20,7 @@ def getConnections( param=None ) :
 		host = param['host'][0]
 		port = param['port'][0]
 
-                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': 'postgres', 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None :
 			return '2' + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + ' ' + results[1]
 	
