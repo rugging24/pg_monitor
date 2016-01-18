@@ -122,10 +122,11 @@ def getLocks( param=None ) :
 		if check == 'nonblocking' :
 			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
 				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
+			print ( getNonBlockingVersionQuery(version,warning[0], warning[1]) )
 		elif check == 'blocking' :
 			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': 'postgres',\
                                  'user' : param['user'] ,'password' : param['password'] } ,getBlockingVersionQuery(version)  )
-		
+			print ( getBlockingVersionQuery(version) )
 		if results[0] == None :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
 
