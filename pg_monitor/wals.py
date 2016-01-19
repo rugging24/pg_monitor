@@ -34,7 +34,8 @@ def getWALs( param=None ) :
                         	if perfdata == '-' :
                                 	perfdata = 'WALS' + '=' + str(row[0]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str( int(row[1]) )
                                 	output =  '{0:s} WAL file(s) found'.format( str(row[0]) )
-	                	status.append( st.getStatus( row[0],int(warning) , int(critical), int('1') , int(row[1])  ) )
+	                	status.append( st.getStatus( row[0],int(warning) , int(critical) ) )
+				#status.append( st.getStatus( row[0],int(warning) , int(critical), int('1') , int(row[1])  ) )
 
                 	status.sort( reverse=True )
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output

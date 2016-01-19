@@ -29,7 +29,7 @@ def getDefaults (check , warning , critical ) :
 	elif check == 'wals' :
 		# -- warning 70%Max count
 		# -- critical 80%Max count
-		return fac.getNumberPercentMix (warning, critical, '70%', '80%' )
+		return fac.getNumberPercentMix (warning, critical )
 	elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
 		# -- warning = 1 week
 		# -- critical = 2 weeks
