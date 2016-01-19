@@ -61,11 +61,11 @@ def getBlockingIterator(rows,item_name,findText, status) :
         output = ''
         for row in rows :
                 if perfdata == '-' :
-                        perfdata = row[0] + '=' + str(row[5]) + ';' +  str('1') + ';' + str('1')
+                        perfdata = row[0] + '=' + str(row[6]) + ';' +  str('1') + ';' + str('1')
                         output =  '{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} \n Blocked Query : \n {6:s} \
                                    \n Blocking Query : \n {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
                 elif perfdata != '-'  :
-                        perfdata = perfdata + '|' + row[0] + '=' + str(row[5]) + ';' +  str('1') + ';' + str('1')
+                        perfdata = perfdata + '|' + row[0] + '=' + str(row[6]) + ';' +  str('1') + ';' + str('1')
 			output =  output + ';{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} \n Blocked Query : \n {6:s} \
                                    \n Blocking Query : \n {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
 
@@ -83,10 +83,10 @@ def getNonBlockingIterator(rows,item_name,warning,critical, status) :
 	output = ''
 	for row in rows :
 		if perfdata == '-' :
-                	perfdata = row[0] + '=' + str(row[5]) + ';' +  str(warning[0]) + ';' + str(critical[0])
+                	perfdata = row[0] + '=' + str(row[6]) + ';' +  str(warning[0]) + ';' + str(critical[0])
                         output =  '{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} \n Locking Query : {5:s}'.format( str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
                 elif perfdata != '-'  :
-                	perfdata = perfdata + '|' + row[0] + '=' + str(row[5]) + ';' +  str(warning[0]) + ';' + str(critical[0])
+                	perfdata = perfdata + '|' + row[0] + '=' + str(row[6]) + ';' +  str(warning[0]) + ';' + str(critical[0])
                         output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} \n Locking Query : {5:s}'.format( str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
 		status.append( st.getStatus( row[6],int(warning[0]) , int(critical[0])  ) )
 	status.sort( reverse=True )
