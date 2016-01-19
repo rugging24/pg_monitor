@@ -56,7 +56,7 @@ def getBlockingVersionQuery (version) :
    		JOIN pg_catalog.pg_stat_activity ka ON ka.{1:s} = kl.pid \
   		WHERE NOT bl.GRANTED;".format( query , pid)
 
-def getBlockingIterator(rows,item_name,findText) :
+def getBlockingIterator(rows,item_name,findText, status) :
         perfdata = '-'
         output = ''
         for row in rows :
@@ -78,7 +78,7 @@ def getBlockingIterator(rows,item_name,findText) :
         return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 
 
-def getNonBlockingIterator(rows,item_name,warning,critical) :
+def getNonBlockingIterator(rows,item_name,warning,critical, status) :
 	perfdata = '-'
 	output = ''
 	for row in rows :
@@ -135,9 +135,9 @@ def getLocks( param=None ) :
 		
 
 		if len(results[1]) > 0 and check == 'nonblocking' : 	
-			retval.append(getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical))
+			retval.append(getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical, status))
 		elif len(results[1]) > 0 and check == 'blocking' :
-			retval.append(getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS',findText))
+			retval.append(getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS',findText, status))
 		else :
 			retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK')
 
