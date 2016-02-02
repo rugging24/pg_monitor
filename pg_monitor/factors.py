@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import math
+import re
 
 def getTimeFactor ( check_val ) :
         factor = 0
@@ -79,41 +80,38 @@ def getNumberPercentLimits( limit, total ) :
 
 
 def checkDigit (check_val) :
-        things_to_replace = ['%','k','m','g','t','p']
-        retval = []
-        for val in check_val :
-                for rep in things_to_replace :
-                        val = val.lower().replace(rep,'').replace(' ','')
-                retval.append(str(val).isdigit())
+        retval = re.findall(r'\d+',check_val)
+        return False not in  [True for element in retval if element.isdigit()]
 
-        return False not in  retval
+def checkLarger ( warning , critical) : 
+	
 
-def getNumberPercentMix (warning, critical, defaultWarn, defaultCritical ) :
+def getNumberPercentMix (warning=None, critical=None, defaultWarn=None, defaultCritical=None ) :
         retval = {}
-        warn = warning  if warning != None else defaultWarn
+        warn = warning   if warning != None else defaultWarn
         crit = critical  if critical != None else defaultCritical
         retval.update ({'warning' : warn})
         retval.update ({'critical' : crit})
 
-        if checkDigit(warn.split('or'))  and checkDigit(crit.split('or'))  : 
+        if checkDigit(warn.split('or'))  or  checkDigit(crit.split('or'))  : 
                 return retval
         else :
                 return None
 
 
-def warningAndOrCriticalProvided (warning,critical, multiplier) :
+def warningAndOrCriticalProvided (warning,critical) :
         # as an heuristic 
         # warning = 0.8 * critical
         if warning == None and critical != None :
                 critical = getSizeFactor ( critical )
                 if critical == None :
                         return None
-                return {'warning' : str( int( math.ceil( multiplier * int(critical[0]) ) ) ) + critical[2][0], 'critical' : str(critical[0]) + critical[2][0] }
+                return {'warning' : None , 'critical' : str(critical[0]) + critical[2][0] }
         elif warning != None and critical == None :
                 warning = getSizeFactor ( warning )
                 if warning == None :
                         return None
-                return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : str( int( math.ceil( int(warning[0]) / multiplier ) ) ) + warning[2][0] }
+                return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : None }
 	elif warning != None and critical != None :
 		critical = getSizeFactor ( critical )
 		warning = getSizeFactor ( warning )
@@ -125,15 +123,14 @@ def warningAndOrCriticalProvided (warning,critical, multiplier) :
 
 
 
-def getTimeDefaults (warning, critical , defaultWarning, defaultCritical, multiplier) :
+def getTimeDefaults (warning, critical , defaultWarning, defaultCritical) :
                 warn = warning if warning != None else defaultWarning
                 crit = critical if critical != None else defaultCritical
                 warn = getTimeFactor( warn )
                 crit = getTimeFactor( crit )
                 retval = {}
                 if warn != None and crit != None :
-                        if int(crit[0]) <= int(warn[0]) :
-                                crit[0] =  int ( math.ceil( int(warn[0]) / multiplier ) )
+			# check for the larger of the 2
                         retval.update( {'warning' : str(warn[0]) + str(warn[2]) }  )
                         retval.update( {'critical' : str(crit[0]) + str(crit[2]) }  )
                         return retval
