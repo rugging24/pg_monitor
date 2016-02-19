@@ -35,7 +35,7 @@ def getDefaults (check , warning , critical ) :
 				return fac.getNumberPercentMix (warning, critical,None,None )  
 			elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
 				# -- warning = 1 month
-				return fac.getTimeDefaults (warning, critical , '1month', '',0.8)
+				return fac.getTimeDefaults (warning, critical , '1month', '')
 			elif check == 'table_bloat' or check == 'index_bloat' :
 				#  Warning and/or Critical must be provided
 				return fac.warningAndOrCriticalProvided (warning,critical,0.8)
