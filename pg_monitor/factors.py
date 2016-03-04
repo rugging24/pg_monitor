@@ -61,7 +61,7 @@ def getNumberPercentLimits( limit, total ) :
                 nperc = []
 		
                 for ele in pLimit :
-			val = re.findall(r'\d+',ele)
+			val = re.findall(r'\d+',ele)[0]
 			val = math.ceil( ( float ( val ) / 100 ) * total )  if ele.find('%') != -1 else int ( val ) 
 			nperc.append (val) 
                 return int (max( nperc))
@@ -71,7 +71,7 @@ def getNumberPercentLimits( limit, total ) :
 def checkDigit (check_val) :
 	retval = []
 	for e in check_val :
-        	retval.append( re.findall(r'\d.+\d+', e ) )
+        	retval.append( re.findall(r'\d.+\d+', e )[0] )
         return False not in  [True for element in retval if element.isdigit()]
 
 	
