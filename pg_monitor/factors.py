@@ -5,27 +5,22 @@ import re
 
 def getTimeFactor ( check_val ) :
         factor = 0
-        val = ''
+        val = re.findall(r'\d.+\d+', check_val.lower() )[0]
         unit = ''
-        if check_val.lower().endswith('min')  or  check_val.lower().endswith('mins')  :
+        if check_val.lower().find('min') != -1  :
                 factor = 1
-                val = check_val.lower().replace('min','').replace('s','').replace(' ','')
                 unit = 'min'
-        elif check_val.lower().endswith('hr')  or check_val.lower().endswith('hrs')   :
+        elif check_val.lower().find('hr') != -1 :
                 factor = 60
-                val = check_val.lower().replace('hr','').replace('s','').replace(' ','')
                 unit = 'hr'
-        elif check_val.lower().endswith('day')  or check_val.lower().endswith('days')  :
+        elif check_val.lower().find('day') != -1 :
                 factor = 24*60
-                val = check_val.lower().replace('day','').replace('s','').replace(' ','')
                 unit = 'day'
-        elif check_val.lower().endswith('wk') or check_val.lower().endswith('wks')  :
+        elif check_val.lower().find('wk') != -1 :
                 factor = 60 * 24 * 7
-                val = check_val.lower().replace('wk','').replace('s','').replace(' ','')
                 unit = 'wk'
-        elif check_val.lower().endswith('yr')  or check_val.lower().endswith('yrs') :
+        elif check_val.lower().find('yr')  != -1 :
                 factor = 60 * 24 * 7 * 52
-                val = check_val.lower().replace('yr','').replace('s','').replace(' ','')
                 unit = 'yr'
 
 	if str(val).isdigit() :
@@ -36,27 +31,22 @@ def getTimeFactor ( check_val ) :
 
 def getSizeFactor ( check_val ) :
         factor = 0
-        val = ''
+        val = re.findall(r'\d.+\d+', check_val.lower() )[0]
         unit = ''
-        if check_val.lower().endswith('k') :
+        if check_val.lower().find('k') != -1 :
                 factor = 1024
-                val = check_val.lower().replace('k','')
                 unit = 'KB'
-        elif check_val.lower().endswith('m') :
+        elif check_val.lower().find('m') != -1 :
                 factor = 1024 * 1024
-                val = check_val.lower().replace('m','')
                 unit = 'MB'
-        elif check_val.lower().endswith('g')  :
+        elif check_val.lower().find('g') != -1  :
                 factor = 1024 * 1024 * 1024
-                val = check_val.lower().replace('g','')
                 unit = 'GB'
-        elif check_val.lower().endswith('t') :
+        elif check_val.lower().find('t') != -1 :
                 factor = 1024 * 1024 * 1024 * 1024
-                val = check_val.lower().replace('t','')
                 unit = 'TB'
-        elif check_val.lower().endswith('p')  :
+        elif check_val.lower().find('p') != -1  :
                 factor = 1024 * 1024 * 1024 * 1024 * 1024
-                val = check_val.lower().replace('p','')
                 unit = 'PB'
 
 	if str(val).isdigit() :
@@ -68,19 +58,20 @@ def getSizeFactor ( check_val ) :
 def getNumberPercentLimits( limit, total ) :
         if limit != None :
                 pLimit = limit.split('or')
-                nperc = 0
-                wperc = 0
+                nperc = []
+		
                 for ele in pLimit :
-                        if ele.find('%') == -1 :
-				nperc = int ( ele.replace(' ','')   )
-                        elif ele.find('%') != -1 :
-                                wperc =  math.ceil( ( float ( ele.replace('%','').replace(' ','') ) / 100 ) * total )
-                return int (max( nperc, wperc ))
+			val = re.findall(r'\d+',ele)
+			val = math.ceil( ( float ( val ) / 100 ) * total )  if ele.find('%') != -1 else int ( val ) 
+			nperc.append (val) 
+                return int (max( nperc))
 
 
 
 def checkDigit (check_val) :
-        retval = re.findall(r'\d.+\d+',check_val)
+	retval = []
+	for e in check_val :
+        	retval.append( re.findall(r'\d.+\d+', e ) )
         return False not in  [True for element in retval if element.isdigit()]
 
 	
