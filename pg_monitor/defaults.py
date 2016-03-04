@@ -30,9 +30,20 @@ def getDefaults (check , warning , critical ) :
                 return {'warning':'dummy', 'critical' :'dummy'}
 	else :
 		if warning != None or critical != None :
+			warn = None 
+			crit = None 
+
+                        if warning != None :
+                        	crit = critical if critical != None else warning
+                        elif critical != None :
+                        	warn = warning if warning != None else critical
+
 			if check == 'wals' :
-				# -- warning and/or critical must be supplied 
-				return fac.getNumberPercentMix (warning, critical,None,None )  
+				# -- warning and/or critical must be supplied
+				if str(warn).isdigit() and str(crit).isdigit() :
+					return {'warning' : warn , 'critical' : crit}
+				else :
+					return None  
 			elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
 				# -- warning = 1 month
 				return fac.getTimeDefaults (warning, critical , '1month', '')
@@ -53,3 +64,5 @@ def getDefaults (check , warning , critical ) :
 				# -- warning = 5 wal files
 				# -- critical = 10 wal files 
 				return fac.getNumberPercentMix (warning, critical, '5', '10' ) 
+		else :
+			return None 

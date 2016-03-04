@@ -15,13 +15,13 @@ def getBackends( param=None ) :
 	status = []
 	perfdata = '-'
 	output = ''
-	if param != None :
+	if param != None :  # extra safety check, but absolutely not necessary 
 		
-		exclude = param.get('exclude') if param.get('exclude') != None else ''
-		excdb = ''
-		if exclude != '' :
+		exclude = param.get('exclude_db') if param.get('exclude_db') != None else None
+		exclude_db = ''
+		if exclude != None :
 			for exc in exclude :
-				excdb = ' AND dbs.datname <> ' + "'" + exc + "'"  	
+				exclude_db = " AND dbs.datname <> " + "'" + exc + "'"  	
 		 
                 query = "SELECT \
 			      dbs.datname, \
@@ -33,7 +33,7 @@ def getBackends( param=None ) :
                          JOIN \
 				pg_database db on db.datname = dbs.datname \
                          WHERE \
-				db.datistemplate IS FALSE {0:s} ".format(excdb)
+				db.datistemplate IS FALSE {0:s} ".format(exclude_db)
 				
 		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0

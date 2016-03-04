@@ -72,7 +72,7 @@ def getNumberPercentLimits( limit, total ) :
                 wperc = 0
                 for ele in pLimit :
                         if ele.find('%') == -1 :
-				nperc = int ( ele.lower().replace(' ','')   )
+				nperc = int ( ele.replace(' ','')   )
                         elif ele.find('%') != -1 :
                                 wperc =  math.ceil( ( float ( ele.replace('%','').replace(' ','') ) / 100 ) * total )
                 return int (max( nperc, wperc ))
@@ -80,10 +80,9 @@ def getNumberPercentLimits( limit, total ) :
 
 
 def checkDigit (check_val) :
-        retval = re.findall(r'\d+',check_val)
+        retval = re.findall(r'\d.+\d+',check_val)
         return False not in  [True for element in retval if element.isdigit()]
 
-def checkLarger ( warning , critical) : 
 	
 
 def getNumberPercentMix (warning=None, critical=None, defaultWarn=None, defaultCritical=None ) :

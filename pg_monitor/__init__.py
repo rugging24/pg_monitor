@@ -1,29 +1,13 @@
 #!/usr/bin/python
 
-# list of valid actions 
-# backends 
-#connections
-# wals
-# autovacuum
-# vacuum
-# autoanalyze 
-# analyze 
-# tale_bloat 
-# index_bloat 
-# table_size
-# index_size 
-# database_size 
-# nonblocking
-# blocking
-# checkpoints 
-# duplicate_indexes
-# replica_lag
-
 # find param : ipl_api.init_de_request
-import defaults
+import defaults, helpText 
 import monitor
 import sys
 
+
+def getHelpText() :
+	print ( helpText.getDescText() ) 
 
 def getArgs(param) :
 	if param != None :	
@@ -36,11 +20,5 @@ def getArgs(param) :
 			param['critical'] = check_warning_critical['critical'] 
 			print (monitor.getChecks (param))
 		else : 
-			if param['check'] in ['checkpoints','table_size','index_size', 'database_size','table_bloat','index_bloat' ] :
-				print ('This check requires warning and/or critical value(s) to be correctly stated.')
-			print ('Invalid command line arguments')
+			getHelpText()
 			sys.exit(0)
-
-#if __name__ == '__main__' :
-#	getArgs()
-	
