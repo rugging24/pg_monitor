@@ -3,6 +3,8 @@
 import sql 
 import checkStatus as st
 import factors as fac
+import perfdataText as perf
+
 
 def getWALs( param=None ) :
         item_name = 'POSTGRES_WALS'
@@ -28,14 +30,13 @@ def getWALs( param=None ) :
 
 		rows = results[1]
 		if len(rows) > 0 :
-			warning = fac.getNumberPercentLimits( param['warning'], rows[0][1])
-			critical = fac.getNumberPercentLimits( param['critical'], rows[0][1])
+			warning = fac.getNumberPercentLimits( param.get('warning'), rows[0][1])
+			critical = fac.getNumberPercentLimits( param.get('critical'), rows[0][1])
                 	for row in rows :
                         	if perfdata == '-' :
-                                	perfdata = 'WALS' + '=' + str(row[0]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str( int(row[1]) )
+					perfdata = perf.getPerfStm ('WALS',row[0],warning,critical)
                                 	output =  '{0:s} WAL file(s) found'.format( str(row[0]) )
 	                	status.append( st.getStatus( row[0],int(warning) , int(critical) ) )
-				#status.append( st.getStatus( row[0],int(warning) , int(critical), int('1') , int(row[1])  ) )
 
                 	status.sort( reverse=True )
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output

@@ -13,11 +13,11 @@ def getArgs(param) :
 	if param != None :	
 		warning = param.get('warning')
 		critical = param.get('critical')
-		check_warning_critical = defaults.getDefaults (param['check'], warning, critical )
+		check_warning_critical = defaults.getDefaults (param.get('check'), warning, critical )
 
 		if check_warning_critical != None :
-			param['warning'] = check_warning_critical['warning']
-			param['critical'] = check_warning_critical['critical'] 
+			param['warning'] = check_warning_critical.get('warning')
+			param['critical'] = check_warning_critical.get('critical') 
 			print (monitor.getChecks (param))
 		else : 
 			getHelpText()

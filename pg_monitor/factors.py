@@ -4,24 +4,28 @@ import math
 import re
 
 def getTimeFactor ( check_val ) :
+	check_val = str(check_val)
         factor = 0
         val = re.findall(r'\d.+\d+', check_val.lower() )[0]
         unit = ''
-        if check_val.lower().find('min') != -1  :
+        if check_val.lower().find('min') != -1  or check_val.lower().find('minute') != -1:
                 factor = 1
                 unit = 'min'
-        elif check_val.lower().find('hr') != -1 :
+        elif check_val.lower().find('hr') != -1 or check_val.lower().find('hour') != -1 :
                 factor = 60
                 unit = 'hr'
-        elif check_val.lower().find('day') != -1 :
+        elif check_val.lower().find('day') != -1 or check_val.lower().find('dy') != -1 :
                 factor = 24*60
                 unit = 'day'
-        elif check_val.lower().find('wk') != -1 :
+        elif check_val.lower().find('wk') != -1 or check_val.lower().find('week') != -1 :
                 factor = 60 * 24 * 7
-                unit = 'wk'
-        elif check_val.lower().find('yr')  != -1 :
+                unit = 'week'
+	elif check_val.lower().find('month') != -1 or check_val.lower().find('mon') != -1 :
+                factor = 60 * 24 * 7 * 4
+                unit = 'month'	
+        elif check_val.lower().find('yr')  != -1 or check_val.lower().find('year')  != -1 :
                 factor = 60 * 24 * 7 * 52
-                unit = 'yr'
+                unit = 'year'
 
 	if str(val).isdigit() :
         	return [val , factor, unit]
@@ -30,22 +34,23 @@ def getTimeFactor ( check_val ) :
 
 
 def getSizeFactor ( check_val ) :
+	check_val = str(check_val)
         factor = 0
         val = re.findall(r'\d.+\d+', check_val.lower() )[0]
         unit = ''
-        if check_val.lower().find('k') != -1 :
+        if check_val.lower().find('kb') != -1 :
                 factor = 1024
                 unit = 'KB'
-        elif check_val.lower().find('m') != -1 :
+        elif check_val.lower().find('mb') != -1 :
                 factor = 1024 * 1024
                 unit = 'MB'
-        elif check_val.lower().find('g') != -1  :
+        elif check_val.lower().find('gb') != -1  :
                 factor = 1024 * 1024 * 1024
                 unit = 'GB'
-        elif check_val.lower().find('t') != -1 :
+        elif check_val.lower().find('tb') != -1 :
                 factor = 1024 * 1024 * 1024 * 1024
                 unit = 'TB'
-        elif check_val.lower().find('p') != -1  :
+        elif check_val.lower().find('pb') != -1  :
                 factor = 1024 * 1024 * 1024 * 1024 * 1024
                 unit = 'PB'
 
@@ -113,7 +118,7 @@ def warningAndOrCriticalProvided (warning,critical) :
 
 
 
-def getTimeDefaults (warning, critical , defaultWarning, defaultCritical) :
+def getTimeDefaults ( warning, critical , defaultWarning=None , defaultCritical=None ) :
                 warn = warning if warning != None else defaultWarning
                 crit = critical if critical != None else defaultCritical
                 warn = getTimeFactor( warn )

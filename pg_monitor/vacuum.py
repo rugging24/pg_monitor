@@ -24,9 +24,6 @@ def getVacuums( param=None ) :
 		check = param['check']
 		item_name = item_name + check.upper()
 		operator = '='
-		if param.get('ignoreNever') != None :
-			if param['ignoreNever']  == 0 :
-				operator = '>'
 		index =  getReturnIndex(check)
 		warning = fac.getTimeFactor( param['warning'])
 		critical = fac.getTimeFactor( param['critical']) 

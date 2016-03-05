@@ -25,28 +25,30 @@ import factors as fac
 def getDefaults (check , warning , critical ) :
 	if check == 'backends' : 
 		# only whole digits and percentages allowed, an or separator is also allowed 
-		return fac.getNumberPercentMix (warning, critical, '80%', '90%' )
+		return fac.getNumberPercentMix (warning, critical, '80%', '85%' )
 	elif check == 'connections' :
                 return {'warning':'dummy', 'critical' :'dummy'}
 	else :
 		if warning != None or critical != None :
-			warn = None 
-			crit = None 
+			warn = warning 
+			crit = critical if critical != None else 0			
 
-                        if warning != None :
-                        	crit = critical if critical != None else warning
-                        elif critical != None :
-                        	warn = warning if warning != None else critical
+
+                        if crit != 0 and warning == None :
+                        	warn = warning if warning != None else crit
+			
 
 			if check == 'wals' :
 				# -- warning and/or critical must be supplied
-				if str(warn).isdigit() and str(crit).isdigit() :
+				if str(warn).isdigit() and str(crit).isdigit()  :
 					return {'warning' : warn , 'critical' : crit}
 				else :
 					return None  
 			elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
 				# -- warning = 1 month
-				return fac.getTimeDefaults (warn, crit , '1month', '')
+				if crit == 0 :
+					crit = '0min'
+				return fac.getTimeDefaults (warn, crit , '1month')
 			elif check == 'table_bloat' or check == 'index_bloat' :
 				#  Warning and/or Critical must be provided
 				return fac.warningAndOrCriticalProvided (warn,crit)
