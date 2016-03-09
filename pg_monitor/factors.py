@@ -6,7 +6,7 @@ import re
 def getTimeFactor ( check_val ) :
 	check_val = str(check_val)
         factor = 0
-        val = re.findall(r'\d.+\d+', check_val.lower() )[0]
+        val = re.findall(r'\d+', check_val.lower() )[0]
         unit = ''
         if check_val.lower().find('min') != -1  or check_val.lower().find('minute') != -1:
                 factor = 1
@@ -36,7 +36,7 @@ def getTimeFactor ( check_val ) :
 def getSizeFactor ( check_val ) :
 	check_val = str(check_val)
         factor = 0
-        val = re.findall(r'\d.+\d+', check_val.lower() )[0]
+        val = re.findall(r'\d+', check_val.lower() )[0]
         unit = ''
         if check_val.lower().find('kb') != -1 :
                 factor = 1024
@@ -76,7 +76,8 @@ def getNumberPercentLimits( limit, total ) :
 def checkDigit (check_val) :
 	retval = []
 	for e in check_val :
-        	retval.append( re.findall(r'\d.+\d+', e )[0] )
+		val = re.findall(r'\d+', e )[0] if len(re.findall(r'\d+', e ) ) == 0 else 'text'			
+        	retval.append( val )
         return False not in  [True for element in retval if element.isdigit()]
 
 	
@@ -88,7 +89,7 @@ def getNumberPercentMix (warning=None, critical=None, defaultWarn=None, defaultC
         retval.update ({'warning' : warn})
         retval.update ({'critical' : crit})
 
-        if checkDigit(warn.split('or'))  or  checkDigit(crit.split('or'))  : 
+        if checkDigit(warn.split('or'))  and  checkDigit(crit.split('or'))  : 
                 return retval
         else :
                 return None
