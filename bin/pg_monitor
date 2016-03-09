@@ -39,7 +39,8 @@ def runMonitor() :
         param['find'] = str( args.find ).split(',')
 	param['warning'] = args.warning
 	param['critical'] = args.critical
-	param['exclude'] = str ( args.exclude ).split(',')
+	param['exclude_db'] = str ( args.exclude ).split(',')
+	param['exclude_pattern'] = str ( args.exclude ).split(',')
 
 
 	pg_monitor.getArgs(param)

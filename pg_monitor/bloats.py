@@ -3,9 +3,10 @@
 import sql 
 import factors as fac
 import checkStatus as st
+import perfdataText as perf
 
 
-def getQuery (check,d1,d2) :
+def getQuery (check) :
 	if check == 'table_bloat' :
 		return "WITH constants AS ( \
     			SELECT current_setting('block_size')::numeric AS bs, 23 AS hdr, 8 AS ma \
@@ -118,7 +119,7 @@ def getQuery (check,d1,d2) :
 		WHERE \
 			bloat_bytes/{0:d} >= {1:d}  \
 		ORDER BY  \
-			pct_bloat DESC;".format( int(d1) , int(d2) )
+			pct_bloat DESC;"
 
 
 	elif check == 'index_bloat' :
@@ -216,12 +217,12 @@ def getQuery (check,d1,d2) :
 			schema_name || '.' || '.' || table_name || '.' || index_name AS table_name, \
 			table_bytes  AS table_size_bytes, \
 			bloat_pct AS bloat_percentage, \
-			round(bloat_bytes/{0:d})  AS bloat_in_bytes, \
+			round(bloat_bytes/{0:d})  AS bloat_size_bytes, \
 			index_bytes  AS index_size_bytes, \
 			index_scans \
 		FROM format_bloat \
 		WHERE bloat_bytes/{0:d} >= {1:d}   \
-		ORDER BY bloat_bytes DESC;".format( int(d1) , int(d2) )
+		ORDER BY bloat_bytes DESC;"
 
 
 def getBloats( param=None ) :
@@ -232,9 +233,16 @@ def getBloats( param=None ) :
         if param != None :
 		check = param['check']
 		item_name = item_name + check.upper()
-		warning = fac.getSizeFactor(param['warning'])
-		critical = fac.getSizeFactor(param['critical'])
-                query = getQuery(check,warning[1],warning[0])  
+		retval = fac.warningAndOrCriticalProvided (param.get('warning'),param.get('critical'))
+		warning = []
+		critical = []
+		if retval != None :
+			warning = retval.get('warning')
+			critical = retval.get('critical')
+		else :
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'Invalid parameters supplied'
+                query = getQuery(check)
+		query = query.format(warning[1],warning[0])
 		
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 
@@ -245,21 +253,14 @@ def getBloats( param=None ) :
 		if len(rows) > 0 :
                 	for row in rows :
                                 out_unit = ''
-                                if int(row[3]) >= int(critical[0]) :
-                                        status.append(2)
-                                        out_unit = [row[3] , critical[2] ]
-                                elif int(row[3]) >= int(warning[0]) :
-                                        status.append(1)
-                                        out_unit = [ row[3], warning[2] ]
+				status.append(st.getStatus(row[3] , warning[0] , critical[0]) )
 
                         	if perfdata == '-' :
-                                	perfdata = row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0]) 
-                                	output =  '{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), out_unit[1], str(row[2]) )
+                                	perfdata = perf.getPerfStm (row[0],row[3],warning[0],critical[0])
+                                	output =  '{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
                         	elif perfdata != '-'  :
-                                	perfdata = perfdata + '|' + row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0])
-                                	output =  output + ';{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), out_unit[1], str(row[2]) )
-
-                		status.append( st.getStatus( int(row[3]),int(warning[0]) , int(critical[0])  ) )
+                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[3],warning[0],critical[0])
+                                	output =  output + ';{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
 
                 	status.sort( reverse=True )
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output

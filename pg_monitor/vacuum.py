@@ -3,6 +3,7 @@
 import sql 
 import factors as fac
 import perfdataText as perf
+import checkStatus as st
 
 
 def getReturnIndex(check) :
@@ -21,12 +22,18 @@ def getVacuums( param=None ) :
         status = []
         perfdata = '-'
         output = ''
+	warning = {}
+	critical = {}
         if param != None :
 		check = param['check']
 		item_name = item_name + check.upper()
 		index =  getReturnIndex(check)
-		warning = fac.getTimeFactor( param.get('warning') )
-		critical = fac.getTimeFactor( param.get('critical') ) 
+		retval = fac.getTimeDefaults ( param.get('warning'), param.get('critical') )
+		if retval != None :
+			warning = retval.get('warning') 
+			critical = retval.get('critical') 
+		else  :
+			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid Parameters supplied !'	 
 
 		query = "SELECT table_name,calculated_time FROM ( \
 				SELECT (schemaname || '.' || relname) table_name,\
@@ -51,30 +58,14 @@ def getVacuums( param=None ) :
 
 		if len(rows) > 0 :
                 	for row in rows : 
-                                out_unit = ''
-				if row[index[0]] != None :
-                        		if int(row[index[0]]) >= int(critical[0]) * int(critical[1]) :
-                        			status.append(2)
-                                		out_unit = [critical[1] , str(critical[2]) + ' ago ' ]
-                        		elif int(row[index[0]]) >= int(warning[0]) * int(warning[1]):
-                        			status.append(1)
-                                		out_unit = [ warning[1], str(warning[2]) + ' ago ' ]
-					else :
-						status.append(0)
-						out_unit = [ warning[1], str(warning[2]) + ' ago '  ]
-
-					div = str (int (row[index[0]])/ int(out_unit[0]) )
-				else : 
-					status.append(2)
-                                        div = 'Never'
-					out_unit = [critical[1] , '  ' + check ]
-
+				status.append( st.getStatus( int(row[index[0]]) , int(warning[0]) * int(warning[1]) , int(critical[0]) * int(critical[1]) )  ) 
+				out_unit = str ( int(row[1]/(60*24)) ) + ' days ago ' 
                         	if perfdata == '-' :
                                 	perfdata = perf.getPerfStm (row[0],str(row[index[0]]),str(warning[0]),str(critical[0]))
-                                	output =  '{0:s} last {1:s} time was {2:s} {3:s} '.format(row[0],check,div,out_unit[1])
+                                	output =  '{0:s} last {1:s} time was {2:s} '.format(row[0],check,out_unit)
                         	elif perfdata != '-'  :
                                 	perfdata = perfdata + '|' + perf.getPerfStm (row[0],str(row[index[0]]),str(warning[0]),str(critical[0])) 
-                                	output =  output + '; {0:s} last {1:s} time was {2:s} {3:s}'.format(row[0],check,div,out_unit[1])
+                                	output =  output + '; {0:s} last {1:s} time was {2:s}'.format(row[0],check,out_unit)
 	        	status.sort( reverse=True )
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output 
 		else :

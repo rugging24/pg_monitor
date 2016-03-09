@@ -97,24 +97,20 @@ def getNumberPercentMix (warning=None, critical=None, defaultWarn=None, defaultC
 def warningAndOrCriticalProvided (warning,critical) :
         # as an heuristic 
         # warning = 0.8 * critical
-        if warning == None and critical != None :
-                critical = getSizeFactor ( critical )
-                if critical == None :
-                        return None
-                return {'warning' : None , 'critical' : str(critical[0]) + critical[2][0] }
-        elif warning != None and critical == None :
-                warning = getSizeFactor ( warning )
-                if warning == None :
-                        return None
-                return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : None }
-	elif warning != None and critical != None :
-		critical = getSizeFactor ( critical )
+	if warning != None and critical != None :
 		warning = getSizeFactor ( warning )
-		if warning == None or critical == None :
-			return None
-		return {'warning' : str(warning[0]) + warning[2][0] ,  'critical' : str( critical[0] ) + critical[2][0] }
-        else :
-                return None
+		critical = getSizeFactor ( critical )
+		retval = {}
+		if ( int(critical[0]) == 0 ) or  ( ( int(critical[0]) != 0 )  and ( int(critical[0]) > int(warning[0])  ) ) :
+			retval.update( {'warning' : warning }  )
+			retval.update( {'critical' : critical }  )
+		else :
+			retval = None
+
+		return retval
+	else :
+		return None
+
 
 
 
@@ -126,8 +122,11 @@ def getTimeDefaults ( warning, critical , defaultWarning=None , defaultCritical=
                 retval = {}
                 if warn != None and crit != None :
 			# check for the larger of the 2
-                        retval.update( {'warning' : str(warn[0]) + str(warn[2]) }  )
-                        retval.update( {'critical' : str(crit[0]) + str(crit[2]) }  )
+			if ( int(crit[0]) == 0 ) or ( int(crit[0]) != 0 )  and ( int(crit[0]) > int(warn[0])  ) :
+                        	retval.update( {'warning' : warn }  )
+                        	retval.update( {'critical' : crit }  )
+			else :
+				retval = None 
                         return retval
                 else :
                         return None

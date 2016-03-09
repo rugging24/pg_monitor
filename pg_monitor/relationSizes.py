@@ -3,40 +3,36 @@
 import sql
 import checkStatus as st
 import factors as fac
+import perfdataText as perf
 
-def getQuery ( check, d0,d1,d2,d3 ) :
+def getQuery ( check ) :
 	query = ''
 	if check == 'table_size' :
 		query = "SELECT \
                               schemaname || '.' || relname, \
-                              (pg_table_size(schemaname || '.' || relname) / {0:d}) as warn_size,\
-			      (pg_table_size(schemaname || '.' || relname) / {1:d}) as crit_size,\
-			      (pg_table_size(schemaname || '.' || relname) / 1024 )::double precision as display_size\
+			      (pg_table_size(schemaname || '.' || relname) / {0:d} ) as display_size\
                          FROM \
                              pg_stat_user_tables\
                          WHERE \
-                            ( pg_table_size(schemaname || '.' || relname) / {2:d} ) >= {3:d} ".format(int(d0) , int(d1) ,int(d2), int(d3) )
+                            ( pg_table_size(schemaname || '.' || relname) / {0:d} ) >= {1:d} "
 	elif check == 'index_size' :
 		query = "SELECT \
 	                       schemaname || '.' || relname || '.' || indexrelname, \
-		               (pg_indexes_size(schemaname || '.' || indexrelname) / {0:d}) as warn_size,\
-			       (pg_indexes_size(schemaname || '.' || indexrelname) / {1:d})  as crit_size,\
-                               (pg_indexes_size(schemaname || '.' || indexrelname) / 1024 )::double precision  as display_size\
+                               (pg_indexes_size(schemaname || '.' || indexrelname) / {0:d} )  as display_size\
 			FROM \
 	                       pg_stat_user_indexes \
                         WHERE \
-        	             ( pg_indexes_size(schemaname || '.' || indexrelname) / {2:d} ) >= {3:d}".format(int(d0) , int(d1) ,int(d2), int(d3) )
+        	             ( pg_indexes_size(schemaname || '.' || indexrelname) / {0:d} ) >= {1:d}"
 	elif check == 'database_size' :
 		query = "SELECT \
-	                      datname, (pg_database_size(datname) / {0:d} ) as warn_size, \
-			      (pg_database_size(datname) / {1:d})  as crit_size, \
-			      (pg_database_size(datname) / 1024 )::double precision  as display_size \
+	                      datname, \
+			      (pg_database_size(datname) / {0:d} ) as display_size \
                          FROM \
 	                      pg_database \
                          WHERE \
 	                      datistemplate IS FALSE \
                          AND \
-	                      ( pg_database_size(datname) / {2:d} ) >= {3:d}".format(int(d0) , int(d1) ,int(d2), int(d3) )
+	                      ( pg_database_size(datname) / {0:d} ) >= {1:d}"
 
 	return query 
 
@@ -45,11 +41,19 @@ def getRelationSizes( param=None ) :
         status = []
         perfdata = '-'
         output = 'OK'
+	warning = []
+	critical = []
         if param != None :
-		warning = fac.getSizeFactor( param['warning'] )
-		critical = fac.getSizeFactor( param['critical'] )
+		retval = fac.warningAndOrCriticalProvided (param.get('warning'),param.get('critical')) 
+		if retval != None :
+			warning = retval.get('warning')
+			critical = retval.get('critical')
+		else :
+			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid parameters passed !'
+
 		item_name = item_name + str(param['check']).upper()
-                query = getQuery ( param['check'],warning[1],critical[1],warning[1] ,warning[0] ) 
+                query = getQuery ( param['check']) 
+		query = query.format( warning[1],warning[0]  )
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None : 
@@ -59,22 +63,16 @@ def getRelationSizes( param=None ) :
 
 		if len(rows) > 0 :
                 	for row in rows :
-				out_unit = ''
-				if int(row[2]) >= int(critical[0]) :
-					status.append(2)
-					out_unit = [row[2] , critical[2] ]
-				elif int(row[1]) >= int(warning[0]) :
-					status.append(1)
-					out_unit = [ row[1], warning[2] ]
+				status.append( st.getStatus(row[1] , warning[0] , critical[0] )  )
                         	if perfdata == '-' :
-                                	perfdata = row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0])
-                                	output =  '{0:s} is {1:d} {2:s} big'.format(row[0],out_unit[0],out_unit[1])
+                                	perfdata = perf.getPerfStm (row[0],row[1],warning[0],critical[0])
+                                	output =  '{0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
                         	elif perfdata != '-'  :
-                                	perfdata = perfdata + '|' + row[0] + '=' + str(row[3]) + ';' +  str(warning[0]) + ';' + str(critical[0])
-                                	output =  output + ';{0:s} is {1:d} {2:s} big'.format(row[0],out_unit[0],out_unit[1])
+                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[1],warning[0],critical[0])
+                                	output =  output + ';{0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
 			status.sort( reverse=True )
 			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-		elif len(rows) == 0 :
+		else :
                 	status.append(0)
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 

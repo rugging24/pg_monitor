@@ -28,6 +28,39 @@ def getDefaults (check , warning , critical ) :
 		return fac.getNumberPercentMix (warning, critical, '80%', '85%' )
 	elif check == 'connections' :
                 return {'warning':'dummy', 'critical' :'dummy'}
+	elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
+		crit = critical if critical != None else '0min'
+		warn = warning if warning != None else '1month'
+		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+			return {'warning' : warn , 'critical' : crit}
+		else :
+			return None		
+	elif check == 'table_size' or check == 'index_size' or check == 'database_size' :
+		crit = critical if critical != None else '0kb'
+		warn = warning
+		if warn == None and critical != '0kb' :
+			warn = critical
+
+		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+                        return {'warning' : warn , 'critical' : crit}
+                else :
+                        return None
+	elif check == 'table_bloat' or check == 'index_bloat' :
+		crit = critical if critical != None else '0kb'
+		warn = warning if warning != None else '1gb'
+		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+			return {'warning' : warn , 'critical' : crit}
+		else :
+                        return None
+	elif check == 'nonblocking' or check == 'blocking' :
+                crit = critical if critical != None else '0min'
+                warn = warning if warning != None else '1min'
+                if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+                        return {'warning' : warn , 'critical' : crit}
+                else :
+                        return None  
+	elif check == 'replica_lag' :
+		return fac.getNumberPercentMix (warn, crit, '5', '10' ) 
 	else :
 		if warning != None or critical != None :
 			warn = warning 
@@ -44,27 +77,8 @@ def getDefaults (check , warning , critical ) :
 					return {'warning' : warn , 'critical' : crit}
 				else :
 					return None  
-			elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
-				# -- warning = 1 month
-				if crit == 0 :
-					crit = '0min'
-				return fac.getTimeDefaults (warn, crit , '1month')
-			elif check == 'table_bloat' or check == 'index_bloat' :
-				#  Warning and/or Critical must be provided
-				return fac.warningAndOrCriticalProvided (warn,crit)
-			elif check == 'table_size' or check == 'index_size' or check == 'database_size' :
+			#elif check == 'checkpoints' :
 				# warning and/or critical value must be supplied
-				return fac.warningAndOrCriticalProvided (warn,crit) 
-			elif check == 'nonblocking' or check == 'blocking' :
-				# --warning = 2min
-				# critical = 3min
-				return fac.getTimeDefaults (warn, crit , '1min', '2mins') 
-			elif check == 'checkpoints' :
-				# warning and/or critical value must be supplied
-				return None
-			elif check == 'replica_lag' :
-				# -- warning = 5 wal files
-				# -- critical = 10 wal files 
-				return fac.getNumberPercentMix (warn, crit, '5', '10' ) 
+			#	return None
 		else :
 			return None 

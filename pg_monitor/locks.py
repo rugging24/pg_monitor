@@ -3,6 +3,8 @@
 import sql
 import factors as fac
 import checkStatus as st
+import perfdataText as perf
+import os
 
 def getVersionParam (version) :
         query = ''
@@ -25,7 +27,7 @@ def getNonBlockingVersionQuery (version,w1,w2) :
 			pa.{1:s}, \
 			pa.usename ,\
 			pa.client_addr,\
-                        date_part('epoch',now()::timestamp - pa.query_start::timestamp)/60 running_time \
+                        date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 running_time \
                 FROM \
 			 pg_catalog.pg_locks l \
                 join pg_catalog.pg_stat_user_tables ut on ut.schemaname || '.' || ut.relname = l.relation::regclass::text \
@@ -34,7 +36,8 @@ def getNonBlockingVersionQuery (version,w1,w2) :
                 where l.granted and lower(l.mode) = any ( \
                          values(lower('ExclusiveLock')),(lower('AccessExclusiveLock')), (lower('ShareLock')) , (lower('RowExclusiveLock')) , \
                          (lower('RowShareLock'))  ) \
-                         And date_part('epoch',now()::timestamp - pa.query_start::timestamp)/60 >= ( {2:d} * {3:d} ) ".format(pid,query, int(w1), int(w2) ) 
+                         And date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 >= ( {2:d} * {3:d} ) \
+			LIMIT 10 ".format(pid,query, int(w1), int(w2) ) 
 
 def getBlockingVersionQuery (version) :
 	query , pid = getVersionParam (version)
@@ -54,28 +57,25 @@ def getBlockingVersionQuery (version) :
    		JOIN pg_catalog.pg_stat_activity a  ON a.{1:s} = bl.pid \
    		JOIN pg_catalog.pg_locks         kl ON kl.transactionid = bl.transactionid AND kl.pid != bl.pid \
    		JOIN pg_catalog.pg_stat_activity ka ON ka.{1:s} = kl.pid \
-  		WHERE NOT bl.GRANTED;".format( query , pid)
+  		WHERE NOT bl.GRANTED LIMIT 10".format( query , pid)
 
 def getBlockingIterator(rows,item_name,findText, status) :
         perfdata = '-'
         output = ''
         for row in rows :
                 if perfdata == '-' :
-                        perfdata = row[0] + '=' + str(row[6]) + ';' +  str('1') + ';' + str('1')
-                        output =  '{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} \n Blocked Query : \n {6:s} \
-                                   \n Blocking Query : \n {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
+                        perfdata = perf.getPerfStm (row[0],row[6],1,0)
+                        output =  '{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s}' + os.linesep + '  Blocked Query : {6:s} \
+                                   ' + os.linesep + ' Blocking Query : {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), \
+                                    str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
                 elif perfdata != '-'  :
-                        perfdata = perfdata + '|' + row[0] + '=' + str(row[6]) + ';' +  str('1') + ';' + str('1')
-			output =  output + ';{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} \n Blocked Query : \n {6:s} \
-                                   \n Blocking Query : \n {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
+                        perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[6],1,0)
+			output =  output + ';{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s}' + os.linesep + 'Blocked Query : {6:s} \
+                                   ' + os.linesep + 'Blocking Query : {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]),\
+                                    str(row[9]), str(row[0]), str(row[1])  )
 
-		for txt in findText :
-			if str(row[0]).find(txt) != -1 :
-				status.append(2)
-			else :
-				status.append(1)
-        status.sort( reverse=True )
-        return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+        #status.sort( reverse=True )
+        return str('2') + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 
 
 def getNonBlockingIterator(rows,item_name,warning,critical, status) :
@@ -83,11 +83,13 @@ def getNonBlockingIterator(rows,item_name,warning,critical, status) :
 	output = ''
 	for row in rows :
 		if perfdata == '-' :
-                	perfdata = row[0] + '=' + str(row[6]) + ';' +  str(warning[0]) + ';' + str(critical[0])
-                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} \n Locking Query : {5:s}'.format( str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
+                	perfdata = perf.getPerfStm (row[0],row[6],warning[0],critical[0])
+                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} ' + os.linesep + 'Locking Query : {5:s}'.format( \
+				  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
                 elif perfdata != '-'  :
-                	perfdata = perfdata + '|' + row[0] + '=' + str(row[6]) + ';' +  str(warning[0]) + ';' + str(critical[0])
-                        output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} \n Locking Query : {5:s}'.format( str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
+                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[6],warning[0],critical[0])
+                        output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} ' + os.linesep + 'Locking Query : {5:s}'.format( \
+                                  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
 		status.append( st.getStatus( row[6],int(warning[0]) , int(critical[0])  ) )
 	status.sort( reverse=True )
 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
@@ -99,12 +101,15 @@ def getLocks( param=None ) :
         output = ''
         if param != None :
 		check = (param['check']).lower()
-		findText = param['find']
+		findText = param.get('find')
 		item_name = item_name + check.upper() + '_LOCKS'
 		dbname = param['dbname']
-		
+		user = param['user']
+		password = param.get('password')
 		host = param['host'][0]
 		port = param['port'][0]
+		warning = []
+		critical = []
 
 		query = "SELECT substring(version() FROM '(\d.\d)')::double precision"
                 results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
@@ -114,19 +119,22 @@ def getLocks( param=None ) :
 		
 
 		version = (results[1])[0][0]
-		
-		warning = fac.getTimeFactor(  param['warning'] )
-		critical = fac.getTimeFactor(  param['critical'] )
+		retvals = getTimeDefaults ( param.get('warning'), param.get('critical') ) 
+		if retvals !=None :
+			warning = retvals.get('warning')
+			critical = retvals.get('critical')
+		else :
+			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'Invalid parameter passed !'
 		
 		results = []
 
 
 		if check == 'nonblocking' :
 			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
-				 'user' : param['user'] ,'password' : param['password'] } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
+				 'user' : user ,'password' : password } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
 		elif check == 'blocking' :
 			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
-                                 'user' : param['user'] ,'password' : param['password'] } ,getBlockingVersionQuery(version)  )
+                                 'user' : user ,'password' : password } ,getBlockingVersionQuery(version)  )
 
 		if results[0] == None :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
@@ -143,11 +151,7 @@ def getLocks( param=None ) :
 
 		if len(retval) > 0 :
 			return retval[0]
-	else :
-		retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid parameters passed to check')
 
-		if len(retval) > 0 :
-			return retval[0]
 ## testing the function 
 #if __name__ == '__main__' :
 #        print ( getLocks( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
