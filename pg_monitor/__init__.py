@@ -20,5 +20,5 @@ def getArgs(param) :
 			param['critical'] = check_warning_critical.get('critical') 
 			print (monitor.getChecks (param))
 		else : 
-			getHelpText()
+			#getHelpText()
 			sys.exit(0)
