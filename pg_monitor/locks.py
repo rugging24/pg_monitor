@@ -119,7 +119,7 @@ def getLocks( param=None ) :
 		
 
 		version = (results[1])[0][0]
-		retvals = getTimeDefaults ( param.get('warning'), param.get('critical') ) 
+		retvals = fac.getTimeDefaults ( param.get('warning'), param.get('critical') ) 
 		if retvals !=None :
 			warning = retvals.get('warning')
 			critical = retvals.get('critical')
