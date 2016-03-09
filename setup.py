@@ -7,7 +7,7 @@ def readme():
         return f.read()
 
 setup(name='pg_monitor',
-      version='1.4.43',
+      version='1.4.44',
       description='PostgreSQL monitoring checks',
       long_description=readme(),
       classifiers=[
