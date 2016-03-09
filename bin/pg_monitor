@@ -14,7 +14,7 @@ def runMonitor() :
         parse.add_argument ( '--host', type=str , default='localhost', nargs='?' ,help='Host of the database. Default:  %(default)s' )
         parse.add_argument ( '--check', type=str, required=True, choices=['backends','connections','wals','vacuum','autovacuum','analyze','autoanalyze',\
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
-                              'duplicate_indexes','replica_lag'], help=pg_monitor.getHelpText() )
+                              'duplicate_indexes','replica_lag'], help='' )
         parse.add_argument ('--find' , type=str , nargs='?',default='', help = 'Finding partterns in locks')
 	parse.add_argument ('--exclude_db' , type=str , nargs='?',default=None , help = 'Exclude database not to be queried')
 	parse.add_argument ('--exclude_pattern' , type=str , nargs='?',default='', help = 'Exclude patterns not to be searched for')
