@@ -31,7 +31,7 @@ def getDefaults (check , warning , critical ) :
 	elif check == 'autovacuum' or check == 'vacuum' or check == 'autoanalyze' or check == 'analyze':
 		crit = critical if critical != None else '0min'
 		warn = warning if warning != None else '1month'
-		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+		if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :
 			return {'warning' : warn , 'critical' : crit}
 		else :
 			return None		
@@ -41,21 +41,21 @@ def getDefaults (check , warning , critical ) :
 		if warn == None and critical != '0kb' :
 			warn = critical
 
-		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+		if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :
                         return {'warning' : warn , 'critical' : crit}
                 else :
                         return None
 	elif check == 'table_bloat' or check == 'index_bloat' :
 		crit = critical if critical != None else '0kb'
 		warn = warning if warning != None else '1gb'
-		if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+		if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :
 			return {'warning' : warn , 'critical' : crit}
 		else :
                         return None
 	elif check == 'nonblocking' or check == 'blocking' :
                 crit = critical if critical != None else '0min'
                 warn = warning if warning != None else '1min'
-                if fac.checkDigit(crit) == True and fac.checkDigit(warn) == True :
+                if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :
                         return {'warning' : warn , 'critical' : crit}
                 else :
                         return None  
@@ -81,4 +81,4 @@ def getDefaults (check , warning , critical ) :
 				# warning and/or critical value must be supplied
 			#	return None
 		else :
-			return None 
+									return None 
