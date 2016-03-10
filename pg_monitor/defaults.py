@@ -38,9 +38,9 @@ def getDefaults (check , warning , critical ) :
 	elif check == 'table_size' or check == 'index_size' or check == 'database_size' :
 		crit = critical if critical != None else '0kb'
 		warn = warning
-		if warn == None and critical != '0kb' :
+		if warn == None and crit != '0kb' :
 			warn = critical
-		elif warn == None and critical == '0kb' :
+		elif warn == None and crit == '0kb' :
 			return None
 
 		if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :

@@ -5,24 +5,17 @@ import checkStatus as st
 import factors as fac
 import perfdataText as perf
 
-def getQuery ( check ) :
+def getQuery ( check,warn_factor,warn_val ) :
 	query = ''
-	if check == 'table_size' :
+	col_name = check.replace('size','name')
+	if check == 'table_size' or check == 'index_size':
 		query = "SELECT \
-                              schemaname || '.' || relname, \
-			      (pg_table_size(schemaname || '.' || relname) / {0:d} ) as display_size\
-                         FROM \
-                             pg_stat_user_tables\
-                         WHERE \
-                            ( pg_table_size(schemaname || '.' || relname) / {0:d} ) >= {1:d} "
-	elif check == 'index_size' :
-		query = "SELECT \
-	                       schemaname || '.' || relname || '.' || indexrelname, \
-                               (pg_indexes_size(schemaname || '.' || indexrelname) / {0:d} )  as display_size\
-			FROM \
-	                       pg_stat_user_indexes \
-                        WHERE \
-        	             ( pg_indexes_size(schemaname || '.' || indexrelname) / {0:d} ) >= {1:d}"
+			{0:s} , \
+			pg_relation_size({0:s})/{1:d}  FROM (\
+			SELECT relid::regclass table_name,indexrelid::regclass index_name \
+			FROM pg_stat_user_indexes \
+			) foo \
+			WHERE pg_relation_size({0:s}) / {1:d}  >= {2:d}	".format(col_name,int(warn_factor),int(warn_val))
 	elif check == 'database_size' :
 		query = "SELECT \
 	                      datname, \
@@ -32,7 +25,7 @@ def getQuery ( check ) :
                          WHERE \
 	                      datistemplate IS FALSE \
                          AND \
-	                      ( pg_database_size(datname) / {0:d} ) >= {1:d}"
+	                      ( pg_database_size(datname) / {0:d} ) >= {1:d}".format(int(warn_factor),int(warn_val))
 
 	return query 
 
@@ -52,8 +45,9 @@ def getRelationSizes( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid parameters passed !'
 
 		item_name = item_name + str(param['check']).upper()
-                query = getQuery ( param['check']) 
-		query = query.format( int(warning[1]),int(warning[0])  )
+		getQuery ( check,col_name,warn_factor,warn_val )
+		col_name = 'table_name' 
+                query = getQuery ( param['check'],warning[1],warning[0] ) 
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None : 

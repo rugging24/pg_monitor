@@ -16,7 +16,6 @@ def getStatus(V , Wn , Cr=0 , Mn=0 , Mx=0) :
 		else :
 			return 3
 	elif Cr == 0 :
-		print ("------------>>> " + str(Cr) )
                 if V < Wn  :
                         return 0
                 elif V >= Wn  :
