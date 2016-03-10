@@ -62,7 +62,7 @@ def getSizeFactor ( check_val ) :
 
 def getNumberPercentLimits( limit, total ) :
         if limit != None :
-                pLimit = limit.split('or')
+                pLimit = str(limit).split('or')
                 nperc = []
 		
                 for ele in pLimit :
@@ -89,7 +89,7 @@ def getNumberPercentMix (warning=None, critical=None, defaultWarn=None, defaultC
         retval.update ({'warning' : warn})
         retval.update ({'critical' : crit})
 
-        if checkDigit(warn.split('or'))  and  checkDigit(crit.split('or'))  : 
+        if checkDigit(str(warn).split('or'))  and  checkDigit(str(crit).split('or'))  : 
                 return retval
         else :
                 return None

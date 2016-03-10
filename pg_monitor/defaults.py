@@ -83,4 +83,5 @@ def getDefaults (check , warning , critical ) :
 				# warning and/or critical value must be supplied
 			#	return None
 		else :
-									return None 
+			print ("Warning and/or critical value required for this check")
+			return None 
