@@ -6,6 +6,12 @@ Checks for a PostgreSQL server
 Installation :
 	pip install pg_monitor
 
+Requirement :
+	python >= 2.7 
+
+Platform :
+	Windows, Linux
+
 optional arguments:
   -h, --help            show this help message and exit
   --port PORT           Port of the database to be accessed. Default: 5432
@@ -54,3 +60,50 @@ optional arguments:
   --find FIND [FIND ...] Finding partterns in locks
   --warning WARNING     Values to be considered as warning signs
   --critical CRITICAL   Values for the critical checks
+
+
+SPECIAL NOTES :
+Backends 		Default: warning --> 80% , critical --> 85% , of the number of connections
+			Accepts both numbers and percentages, and could be combined with an or
+			e.g 20 or 10% is allowed
+
+Vacuum/analyze		Default: warning --> 1 month.  No default critical value.
+			Accepts : integers with the following units 
+			day(s), week(s), month(s), year(s)
+
+Autoanalyze/autovacuum  Same as for vacuum and analyze
+			
+Relation sizes		(tables,indexes and databases). Warning and/or critical value must be provided
+			Accepts integers with the following units
+			KB,MB,GB,TB,PB
+
+Bloat 			Default : warning --> 1GB. No default critical value provided
+			Accepts integers with the following units
+			KB,MB,GB,TB,PB
+
+Locks			Default : warning --> 1min . No default critical value provided
+			Accepts integers with the smallest units being minute(s)
+			** accept others higher than that, but they don't make any
+			technical sence and might not be useful for the purpose of 
+			lock monitoring.
+ 
+Replica_lag		Default : warning --> 5. Critical --> 10 . (16MB worth of WAL files)
+			Accepts only integers. Units not allowed
+
+WALS 			No defaults. Warning and/or critical value must be provided
+			Only integer accepted
+
+
+
+
+SAMPLE USAGE :
+Help 			pg_monitor --help 
+
+Checking the number of backends 
+			pg_monitor --check=backends --user=monitor --password=secrete --dbname=mydbName --host=hostname 
+
+			*** Depending on your postgres hba settings, password may not be necessary.
+
+			pg_monitor --check=backends --user=monitor --password=secrete --dbname=mydbName --host=hostname --warning='90 or 85%' --critical='95%'
+
+	 
