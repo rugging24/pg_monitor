@@ -39,6 +39,9 @@ def getReplicaLags( param=None ) :
 		print (hosts[1:])
 		print (ports[counter])
 		for rep_host in hosts[1:] :
+			print(query)
+			print ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
+                                        , 'user' : param['user'] ,'password' : param['password'] } )
 			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
 			print ("------------------->>>>> " +  str(replica[0]) )
