@@ -44,11 +44,11 @@ def getReplicaLags( param=None ) :
 			elif replica[0] == None :
 				wal_lag = -1 
 			if perfdata == '-' :
-				perfdata = perf.getPerfStm (rep_host , wal_lag ,warning,critical) 
+				perfdata = perf.getPerfStm (rep_host , wal_lag ,warning,str(critical)) 
 				output =  'replica on {0:s} lags behind master {1:s} by a total of {2:s} WALs. NOTE: a -1 lag value means the replica is not available !!! '\
 					  .format( rep_host , hosts[0] , str(wal_lag) )
 			elif perfdata != '-'  :
-				perfdata = perfdata + '|' + perf.getPerfStm (rep_host , wal_lag ,warning,critical)
+				perfdata = perfdata + '|' + perf.getPerfStm (rep_host , wal_lag ,warning,str(critical))
 				output =  output + ';replica on {0:s} lags behind master {1:s} by a total of {2:s} WALs. NOTE: a -1 lag value means the replica is not available !!!'\
 						.format( rep_host , hosts[0] , str(wal_lag) )
 			if wal_lag != -1 :

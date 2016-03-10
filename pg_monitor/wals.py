@@ -34,7 +34,7 @@ def getWALs( param=None ) :
 			critical = fac.getNumberPercentLimits( param.get('critical'), rows[0][1])
                 	for row in rows :
                         	if perfdata == '-' :
-					perfdata = perf.getPerfStm ('WALS',row[0],warning,critical)
+					perfdata = perf.getPerfStm ('WALS',row[0],warning,str(critical))
                                 	output =  '{0:s} WAL file(s) found'.format( str(row[0]) )
 	                	status.append( st.getStatus( row[0],int(warning) , int(critical) ) )
 

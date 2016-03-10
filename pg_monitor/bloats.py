@@ -256,10 +256,10 @@ def getBloats( param=None ) :
 				status.append(st.getStatus(row[3] , warning[0] , critical[0]) )
 
                         	if perfdata == '-' :
-                                	perfdata = perf.getPerfStm (row[0],row[3],warning[0],critical[0])
+                                	perfdata = perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
                                 	output =  '{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
                         	elif perfdata != '-'  :
-                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[3],warning[0],critical[0])
+                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
                                 	output =  output + ';{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
 
                 	status.sort( reverse=True )

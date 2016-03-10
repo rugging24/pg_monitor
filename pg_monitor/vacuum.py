@@ -56,7 +56,6 @@ def getVacuums( param=None ) :
 	
 		rows = results[1]
 
-		print ("-------->>>> " + str(critical[0]))
 
 		if len(rows) > 0 :
                 	for row in rows : 
