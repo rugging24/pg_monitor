@@ -39,7 +39,8 @@ def getReplicaLags( param=None ) :
 		for rep_host in hosts[1:] :
 			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
-			if int(replica[0]) == 0 :
+			print ("------------------->>>>> " +  str(replica[0]) )
+			if replica[0] == 0 :
 				wal_lag = hexa.computeMegaByteDiff ( master[1] , replica[1] ) / 16
 			elif replica[0] == None :
 				wal_lag = -1 
