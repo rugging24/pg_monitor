@@ -2,6 +2,10 @@
 
 
 def getStatus(V , Wn , Cr=0 , Mn=0 , Mx=0) :
+	Cr = int(Cr)
+	Wn = int(Wn)
+	V = int(V)
+
 	if Cr != 0 :
 		if V < Wn and Wn < Cr  : 
 			return 0
@@ -12,6 +16,7 @@ def getStatus(V , Wn , Cr=0 , Mn=0 , Mx=0) :
 		else :
 			return 3
 	elif Cr == 0 :
+		print ("------------>>> " + str(Cr) )
                 if V < Wn  :
                         return 0
                 elif V >= Wn  :
