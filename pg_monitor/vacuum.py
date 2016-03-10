@@ -22,8 +22,8 @@ def getVacuums( param=None ) :
         status = []
         perfdata = '-'
         output = ''
-	warning = {}
-	critical = {}
+	warning = []
+	critical = []
         if param != None :
 		check = param['check']
 		item_name = item_name + check.upper()
@@ -55,6 +55,8 @@ def getVacuums( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]
 	
 		rows = results[1]
+
+		print ("-------->>>> " + str(critical[0]))
 
 		if len(rows) > 0 :
                 	for row in rows : 
