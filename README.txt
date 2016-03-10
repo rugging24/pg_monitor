@@ -12,6 +12,9 @@ Requirement :
 Platform :
 	Windows, Linux
 
+Bug report :
+			Please send your bug reports to rugging24@gmail.com
+
 optional arguments:
   -h, --help            show this help message and exit
   --port PORT           Port of the database to be accessed. Default: 5432
