@@ -36,15 +36,10 @@ def getReplicaLags( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + str(master[1])
 
 		counter = 1
-		print (hosts[1:])
-		print (ports[counter])
 		for rep_host in hosts[1:] :
-			print(query)
-			print ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
-                                        , 'user' : param['user'] ,'password' : param['password'] } )
+			query = "SELECT pg_last_xlog_replay_location()"
 			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
-			print ("------------------->>>>> " +  str(replica[0]) )
 			if replica[0] == 0 :
 				wal_lag = hexa.computeMegaByteDiff ( master[1] , replica[1] ) / 16
 			elif replica[0] == None :
