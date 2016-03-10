@@ -45,7 +45,6 @@ def getRelationSizes( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid parameters passed !'
 
 		item_name = item_name + str(param['check']).upper()
-		getQuery ( check,col_name,warn_factor,warn_val )
 		col_name = 'table_name' 
                 query = getQuery ( param['check'],warning[1],warning[0] ) 
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
