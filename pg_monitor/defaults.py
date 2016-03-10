@@ -62,7 +62,7 @@ def getDefaults (check , warning , critical ) :
                 else :
                         return None  
 	elif check == 'replica_lag' :
-		return fac.getNumberPercentMix (warn, crit, '5', '10' ) 
+		return fac.getNumberPercentMix (warning, critical, '5', '10' ) 
 	else :
 		if warning != None or critical != None :
 			warn = warning 
