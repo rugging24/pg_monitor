@@ -36,6 +36,8 @@ def getReplicaLags( param=None ) :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + str(master[1])
 
 		counter = 1
+		print (hosts[1:])
+		print (ports[counter])
 		for rep_host in hosts[1:] :
 			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
