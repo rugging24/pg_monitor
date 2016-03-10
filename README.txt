@@ -3,6 +3,9 @@ Monitors postgres and produces output usable by monitoring systems such as Nagio
 
 Checks for a PostgreSQL server
 
+Installation :
+	pip install pg_monitor
+
 optional arguments:
   -h, --help            show this help message and exit
   --port PORT           Port of the database to be accessed. Default: 5432
