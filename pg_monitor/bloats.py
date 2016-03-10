@@ -242,7 +242,7 @@ def getBloats( param=None ) :
 		else :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'Invalid parameters supplied'
                 query = getQuery(check)
-		query = query.format(warning[1],warning[0])
+		query = query.format(int(warning[1]),int(warning[0]))
 		
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 

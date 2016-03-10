@@ -46,7 +46,8 @@ def getVacuums( param=None ) :
 				pg_stat_user_tables \
 				) foo  \
 		 	WHERE \
-				( calculated_time /60 )  >=  ( {1:d} * {2:d} )  ".format( index[1] , int(warning[0]) , int(warning[1]) )
+				( calculated_time /60 )  >=  ( {1:d} * {2:d} ) \
+                                ORDER BY calculated_time DESC LIMIT 10 ".format( index[1] , int(warning[0]) , int(warning[1]) )
 
 
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )

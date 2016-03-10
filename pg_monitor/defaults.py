@@ -40,6 +40,8 @@ def getDefaults (check , warning , critical ) :
 		warn = warning
 		if warn == None and critical != '0kb' :
 			warn = critical
+		elif warn == None and critical == '0kb'
+			return None
 
 		if fac.checkDigit(crit.split()) == True and fac.checkDigit(warn.split()) == True :
                         return {'warning' : warn , 'critical' : crit}

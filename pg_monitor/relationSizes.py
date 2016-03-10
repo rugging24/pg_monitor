@@ -53,7 +53,7 @@ def getRelationSizes( param=None ) :
 
 		item_name = item_name + str(param['check']).upper()
                 query = getQuery ( param['check']) 
-		query = query.format( warning[1],warning[0]  )
+		query = query.format( int(warning[1]),int(warning[0])  )
                 results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None : 
