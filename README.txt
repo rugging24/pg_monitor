@@ -107,3 +107,6 @@ Checking the number of backends
 			pg_monitor --check=backends --user=monitor --password=secrete --dbname=mydbName --host=hostname --warning='90 or 85%' --critical='95%'
 
 	 
+
+Checking for replica lag
+			pg_monitor --check=replica_lag --user=monitor --password=secrete --dbname=mydbName --host=master,replica1,replica2,replicaN --port=master,replica1,replica2,replicaN
