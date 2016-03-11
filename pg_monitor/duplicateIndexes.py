@@ -64,7 +64,3 @@ def getBackends( param=None ) :
 		else :
 			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'
 
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getBackends( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-#                         'warning' : '30'  , 'critical' : '45%'  } )  )

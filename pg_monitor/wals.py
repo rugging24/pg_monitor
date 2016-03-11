@@ -42,8 +42,4 @@ def getWALs( param=None ) :
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'No WAL file found, at least One WAL file should be present.'
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getWALs( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-#                         'warning' : '2%'  , 'critical' : '100%'  } )  )
 

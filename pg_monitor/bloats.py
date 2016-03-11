@@ -266,7 +266,3 @@ def getBloats( param=None ) :
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else : 
 			return '0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK'
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getBloats( {'host' : ['localhost'], 'port' : ['5432'] ,'user' : 'postgres' , 'password' : '',\
-#                         'warning' : '1g'  , 'critical' : '5g', 'check' : 'index_bloat'  } )  )

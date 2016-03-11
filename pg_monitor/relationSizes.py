@@ -69,8 +69,4 @@ def getRelationSizes( param=None ) :
                 	status.append(0)
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getRelationSizes( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-#                         'warning' : '3k'  , 'critical' : '5m'  , 'check' : 'table_size' } )  )
 

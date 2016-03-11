@@ -49,6 +49,3 @@ def getConnections( param=None ) :
 
                 status.sort( reverse=True )
                 return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getConnections( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '' } )  )

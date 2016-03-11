@@ -72,7 +72,3 @@ def getVacuums( param=None ) :
                 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output 
 		else :
 			return str('0') + ' ' + item_name + ' ' + '-'  + ' ' + 'OK'
-## testing the function 
-#if __name__ == '__main__' :
-#        print ( getVacuums( {'host' : 'localhost', 'port' : '5432' ,'user' : 'postgres' , 'password' : '',\
-#                         'warning' : '2 days'  , 'critical' : '4days', 'check' : 'autovacuum','ignoreNever': 0 } )  )
