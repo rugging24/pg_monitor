@@ -26,7 +26,8 @@ def getNonBlockingVersionQuery (version,w1,w2) :
 			pa.{1:s}, \
 			pa.usename ,\
 			pa.client_addr,\
-                        date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 running_time \
+                        date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 running_time, \
+			l.mode \
                 FROM \
 			 pg_catalog.pg_locks l \
                 join pg_catalog.pg_stat_user_tables ut on ut.schemaname || '.' || ut.relname = l.relation::regclass::text \
@@ -83,12 +84,12 @@ def getNonBlockingIterator(rows,item_name,warning,critical, status) :
 	for row in rows :
 		if perfdata == '-' :
                 	perfdata = perf.getPerfStm (row[0],row[6],warning[0],str(critical[0]))
-                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
-				  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
+                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s}:{6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
+				  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3]), str(row[7])  )
                 elif perfdata != '-'  :
                 	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[6],warning[0],str(critical[0]))
-                        output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
-                                  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3])  )
+                        output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s}:{6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
+                                  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3]),str(row[7])  )
 		status.append( st.getStatus( row[6],int(warning[0]) , int(critical[0])  ) )
 	status.sort( reverse=True )
 	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
