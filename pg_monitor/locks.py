@@ -37,7 +37,7 @@ def getNonBlockingVersionQuery (version,w1,w2) :
                          values(lower('ExclusiveLock')),(lower('AccessExclusiveLock')), (lower('ShareLock')) , (lower('RowExclusiveLock')) , \
                          (lower('RowShareLock'))  ) \
                          And date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 >= ( {2:d} * {3:d} ) \
-			LIMIT 10 ".format(pid,query, int(w1), int(w2) ) 
+			LIMIT 20 ".format(pid,query, int(w1), int(w2) ) 
 
 def getBlockingVersionQuery (version) :
 	query , pid = getVersionParam (version)
