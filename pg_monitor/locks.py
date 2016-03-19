@@ -65,14 +65,14 @@ def getBlockingIterator(rows,item_name,findText, status) :
         for row in rows :
                 if perfdata == '-' :
                         perfdata = perf.getPerfStm (row[0],row[6],1,'0')
-                        output =  '{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} mins \n  Blocked Query : {6:s} \
-                                   \n  Blocking Query : {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), \
-                                    str(row[5]), str(row[9]), str(row[0]), str(row[1])  )
+                        output =  '{0:s}(pid- {1:s}) has been blocked({2:s}) by {3:s}(pid- {4:s}) for {5:s} mins \n  Blocked Query : {6:s} \
+                                   \n  Blocking Query : {7:s} \n Waiting time : {8:s}'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), \
+                                    str(row[5]), str(row[6]), str(row[0]), str(row[1]), str(row[9])  )
                 elif perfdata != '-'  :
                         perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[6],1,'0')
-			output =  output + ';{0:s}({1:s}) has been blocked({2:s}) by {3:s}({4:s}) for {5:s} mins \n Blocked Query : {6:s} \
-                                   \n Blocking Query : {7:s }'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), str(row[5]),\
-                                    str(row[9]), str(row[0]), str(row[1])  )
+			output =  output + '; \n {0:s}(pid- {1:s}) has been blocked({2:s}) by {3:s}(pid- {4:s}) for {5:s} mins \n  Blocked Query : {6:s} \
+                                   \n  Blocking Query : {7:s} \n Waiting time : {8:s}'.format( str(row[8]) , str(row[7]) , str(row[2]) , str(row[4]), \
+                                    str(row[5]), str(row[6]), str(row[0]), str(row[1]), str(row[9])  )
 
         #status.sort( reverse=True )
         return str('2') + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
@@ -84,11 +84,11 @@ def getNonBlockingIterator(rows,item_name,warning,critical, status) :
 	for row in rows :
 		if perfdata == '-' :
                 	perfdata = perf.getPerfStm (row[0],row[6],warning[0],str(critical[0]))
-                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s} --> {6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
+                        output =  '{0:s} has been locked({1:s}) by {2:s}({3:s},{6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
 				  str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3]), str(row[7])  )
                 elif perfdata != '-'  :
                 	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[6],warning[0],str(critical[0]))
-                        output =  output + ';{0:s} has been locked({1:s}) by {2:s}({3:s} --> {6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
+                        output =  output + ';\n {0:s} has been locked({1:s}) by {2:s}({3:s},{6:s}) for {4:s} mins \n Locking Query : {5:s}'.format( \
                                   str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3]),str(row[7])  )
 		status.append( st.getStatus( row[6],int(warning[0]) , int(critical[0])  ) )
 	status.sort( reverse=True )
