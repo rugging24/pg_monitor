@@ -51,6 +51,11 @@ def getVacuums( param=None ) :
 				( calculated_time /60 )  >=  ( {1:d} * {2:d} ) \
                                 ORDER BY calculated_time DESC LIMIT 5 ".format( index[1] , int(warning[0]) , int(warning[1]) )
 
+                exclude_db = param.get('exclude_db')
+                for db in exclude_db :
+                        if db in dbnames :
+                                dbnames.remove(db)
+
 		for dbname in dbnames :
                 	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 		

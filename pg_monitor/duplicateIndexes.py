@@ -49,6 +49,11 @@ def getBackends( param=None ) :
         			AND userdex.indexrelname = pg_indexes.indexname \
 			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname LIMIT 5" 
 
+                exclude_db = param.get('exclude_db')
+                for db in exclude_db :
+                        if db in dbnames :
+                                dbnames.remove(db)
+
 		for dbname in dbnames :
                 	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 			if results[0] == None : 

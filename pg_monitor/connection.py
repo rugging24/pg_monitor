@@ -27,6 +27,11 @@ def getConnections( param=None ) :
 	
 		dbs = results[1]
 
+                exclude_db = param.get('exclude_db')
+                for db in exclude_db :
+                        if db in dbs :
+                                dbnames.remove(db)
+
 		for db in dbs :
 			query = "select version()"
 			begin = time.time()

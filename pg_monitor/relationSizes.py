@@ -49,6 +49,11 @@ def getRelationSizes( param=None ) :
                 query = getQuery ( param['check'],warning[1],warning[0] ) 
 		dbnames = param.get('dbname')
 
+                exclude_db = param.get('exclude_db')
+                for db in exclude_db :
+                        if db in dbnames :
+                                dbnames.remove(db)
+
 		for dbname in dbnames : 
                 	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 		

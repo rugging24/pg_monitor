@@ -75,8 +75,6 @@ def getBlockingIterator(rows,item_name,findText, status,warning,critical) :
                                     str(row[5]), str(row[6]), str(row[0]), str(row[1]), str(row[9])  )
 
 
-        #status.sort( reverse=True )
-        #return str('2') + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 	return {'status' : '2', 'item' : item_name , 'perfdata' : perfdata, 'output' : output }
 
 
@@ -131,8 +129,11 @@ def getLocks( param=None ) :
 			return '2' + ' ' + item_name + ' ' + '-' + ' ' + 'Invalid parameter passed !'
 		
 		results = []
+		exclude_db = param.get('exclude_db')
+		for db in exclude_db :
+			if db in dbnames :
+				dbnames.remove(db)
 
-		
 		for dbname in dbnames :
 			if check == 'nonblocking' :
 				results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
