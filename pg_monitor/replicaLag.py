@@ -24,12 +24,14 @@ def getReplicaLags( param=None ) :
 
                 query = "SELECT pg_current_xlog_location() "
 		
+		dbname = param.get('dbname')[0]
+		
 		hosts = param['host']
 		ports = param['port']	
 		if len(hosts) > len(ports) :
 			ports = ports * len(hosts)
 
-		master = sql.getSQLResult ( {'host': hosts[0] , 'port' : ports[0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		master = sql.getSQLResult ( {'host': hosts[0] , 'port' : ports[0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		
 		
 		if master[0] == None :
@@ -38,7 +40,7 @@ def getReplicaLags( param=None ) :
 		counter = 1
 		for rep_host in hosts[1:] :
 			query = "SELECT pg_last_xlog_replay_location()"
-			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': param['dbname'] \
+			replica = sql.getSQLResult ( {'host': rep_host , 'port' : ports[counter], 'dbname': dbname \
 					, 'user' : param['user'] ,'password' : param['password'] } ,query )
 			if replica[0] == 0 :
 				wal_lag = hexa.computeMegaByteDiff ( master[1] , replica[1] ) / 16
@@ -50,7 +52,7 @@ def getReplicaLags( param=None ) :
 					  .format( rep_host , hosts[0] , str(wal_lag) )
 			elif perfdata != '-'  :
 				perfdata = perfdata + '|' + perf.getPerfStm (rep_host , wal_lag ,warning,str(critical))
-				output =  output + ';replica on {0:s} lags behind master {1:s} by a total of {2:s} WALs. NOTE: a -1 lag value means the replica is not available !!!'\
+				output =  output + ';\n replica on {0:s} lags behind master {1:s} by a total of {2:s} WALs. NOTE: a -1 lag value means the replica is not available !!!'\
 						.format( rep_host , hosts[0] , str(wal_lag) )
 			if wal_lag != -1 :
 				status.append( st.getStatus( wal_lag , warning , critical ) )
@@ -60,13 +62,3 @@ def getReplicaLags( param=None ) :
 
 		status.sort(reverse=True)
 		return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
-				
-
-
-
-## testing the function 
-#if __name__ == '__main__' :
-#	print ( getReplicaLags( {'host' : ['localhost','localhost'], 'port' : ['5432','5432'] ,'user' : 'postgres' , 'password' : '',\
-#                        'warning' : '3'  , 'critical' : '4'  } )  ) 
-
-

@@ -119,7 +119,7 @@ def getQuery (check) :
 		WHERE \
 			bloat_bytes/{0:d} >= {1:d}  \
 		ORDER BY  \
-			pct_bloat DESC;"
+			pct_bloat DESC LIMIT 5"
 
 
 	elif check == 'index_bloat' :
@@ -222,7 +222,7 @@ def getQuery (check) :
 			index_scans \
 		FROM format_bloat \
 		WHERE bloat_bytes/{0:d} >= {1:d}   \
-		ORDER BY bloat_bytes DESC;"
+		ORDER BY bloat_bytes DESC LIMIT 5"
 
 
 def getBloats( param=None ) :
@@ -233,6 +233,7 @@ def getBloats( param=None ) :
         if param != None :
 		check = param['check']
 		item_name = item_name + check.upper()
+		dbnames = param.get('dbname')
 		retval = fac.warningAndOrCriticalProvided (param.get('warning'),param.get('critical'))
 		warning = []
 		critical = []
@@ -244,25 +245,28 @@ def getBloats( param=None ) :
                 query = getQuery(check)
 		query = query.format(int(warning[1]),int(warning[0]))
 		
-                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
+		for dbname in dbnames :
+                	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 
-		if results[0] == None :
-			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+			if results[0] == None :
+				return '2' + ' ' + item_name + ' ' + perfdata + ' ' + results[1]
 			
-		rows = results[1]
-		if len(rows) > 0 :
-                	for row in rows :
-                                out_unit = ''
-				status.append(st.getStatus(row[3] , warning[0] , critical[0]) )
+			rows = results[1]
+			if len(rows) > 0 :
+                		for row in rows :
+                                	out_unit = ''
+					status.append(st.getStatus(row[3] , warning[0] , critical[0]) )
 
-                        	if perfdata == '-' :
-                                	perfdata = perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
-                                	output =  '{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
-                        	elif perfdata != '-'  :
-                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
-                                	output =  output + ';{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
+                        		if perfdata == '-' :
+                                		perfdata = perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
+                                		output =  '{0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
+                        		elif perfdata != '-'  :
+                                		perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[3],warning[0],str(critical[0]))
+                                		output =  output + ';\n {0:s} has {1:s} {2:s} ({3:s})% worth of bloat'.format(row[0],str(row[3]), warning[2], str(row[2]) )
 
-                	status.sort( reverse=True )
-                	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+                	
+		if perfdata != '-' :
+			status.sort( reverse=True )
+			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else : 
 			return '0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK'

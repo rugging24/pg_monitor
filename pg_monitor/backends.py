@@ -11,12 +11,13 @@ import factors as fac
 
 
 def getBackends( param=None ) :
-	item_name = 'POSTGRES_BACKENDS'
+	item_name ='POSTGRES_BACKENDS'
 	status = []
 	perfdata = '-'
 	output = ''
 	if param != None :  # extra safety check, but absolutely not necessary 
-		
+
+		dbnames = param.get('dbname')		
 		exclude = param.get('exclude_db') if param.get('exclude_db') != None else None
 		exclude_db = ''
 		if exclude != None :
@@ -35,7 +36,7 @@ def getBackends( param=None ) :
                          WHERE \
 				db.datistemplate IS FALSE {0:s} ".format(exclude_db)
 				
-		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
+		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbnames[0], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
 
 		if results[0] == None :

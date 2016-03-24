@@ -19,8 +19,9 @@ def getConnections( param=None ) :
 	
 		host = param['host'][0]
 		port = param['port'][0]
+		dbname = param.get('dbname')[0]
 
-                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 		if results[0] == None :
 			return '2' + ' ' + 'POSTGRES_CONNECTIONS' + ' ' + '-' + ' ' + results[1]
 	
@@ -44,7 +45,7 @@ def getConnections( param=None ) :
                                	output =  '{0:s} {1:s}'.format(db[0], out_add.format(str(duration) ) )
                        	elif perfdata != '-'  :
                                	perfdata = perfdata + '|' + db[0] + '=' + str ( duration )
-                               	output =  output + '; {0:s} {1:s}'.format(db[0], out_add.format(str(duration) ) )
+                               	output =  output + ';\n {0:s} {1:s}'.format(db[0], out_add.format(str(duration) ) )
 
 
                 status.sort( reverse=True )

@@ -9,6 +9,8 @@ def getBackends( param=None ) :
         perfdata = '-'
         output = ''
         if param != None :
+
+		dbnames = param.get('dbname')[0]
                 query ="WITH index_cols_ord as ( \
     				SELECT attrelid, attnum, attname \
     				FROM pg_attribute \
@@ -45,22 +47,25 @@ def getBackends( param=None ) :
     			JOIN dup_natts ON userdex.indexrelid = dup_natts.indexrelid \
     			JOIN pg_indexes ON userdex.schemaname = pg_indexes.schemaname \
         			AND userdex.indexrelname = pg_indexes.indexname \
-			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname ;" 
+			ORDER BY userdex.schemaname, userdex.relname, cols, userdex.indexrelname LIMIT 5" 
 
-                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
-		if results[0] == None : 
-			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+		for dbname in dbnames :
+                	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
+			if results[0] == None : 
+				return '2' + ' ' + item_name + ' ' + perfdata  + ' ' + results[1]
 		
-		rows = results[1]
+			rows = results[1]
 
-		if len(rows) > 0 :
-                	for row in rows :
-                        	if output == '' :
-                                	output =  '{0:s} with cols {1:s} appears to be a duplicate Index'.format(row[0],row[1])
-                        	elif output != ''  :
-                                	output =  output + ';{0:s} with cols {1:s} appears to be a duplicate Index'.format(row[0],row[1])
+			if len(rows) > 0 :
+                		for row in rows :
+                        		if output == '' :
+                                		output =  '{0:s} with cols {1:s} appears to be a duplicate Index'.format(row[0],row[1])
+                        		elif output != ''  :
+                                		output =  output + ';\n {0:s} with cols {1:s} appears to be a duplicate Index'.format(row[0],row[1])
 
-			return '1' + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+
+		if output != '' :
+			return '1' + ' ' + item_name + ' ' + '-' + ' ' + output
 		else :
 			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'
 

@@ -37,7 +37,7 @@ def getNonBlockingVersionQuery (version,w1,w2) :
                          values(lower('ExclusiveLock')),(lower('AccessExclusiveLock')), (lower('ShareLock')) , (lower('RowExclusiveLock')) , \
                          (lower('RowShareLock'))  ) \
                          And date_part('epoch',clock_timestamp()::timestamp - pa.query_start::timestamp)/60 >= ( {2:d} * {3:d} ) \
-			LIMIT 20 ".format(pid,query, int(w1), int(w2) ) 
+			LIMIT 5 ".format(pid,query, int(w1), int(w2) ) 
 
 def getBlockingVersionQuery (version) :
 	query , pid = getVersionParam (version)
@@ -48,16 +48,16 @@ def getBlockingVersionQuery (version) :
                         bl.locktype     AS blocked_type, \
                         ka.usename      AS blocking_user, \
                         kl.pid		AS blocking_pid, \
-                        date_part('epoch',clock_timestamp()::timestamp - ka.query_start::timestamp) blocking_time, \
+                        date_part('epoch',clock_timestamp()::timestamp - ka.query_start::timestamp)/60  blocking_time, \
                         bl.pid          AS blocked_pid, \
                         a.usename       AS blocked_user, \
-                        date_part('epoch',clock_timestamp()::timestamp - a.query_start::timestamp)  waiting_time \
+                        date_part('epoch',clock_timestamp()::timestamp - a.query_start::timestamp)/60  waiting_time \
   		FROM  \
 			pg_catalog.pg_locks         bl \
    		JOIN pg_catalog.pg_stat_activity a  ON a.{1:s} = bl.pid \
    		JOIN pg_catalog.pg_locks         kl ON kl.transactionid = bl.transactionid AND kl.pid != bl.pid \
    		JOIN pg_catalog.pg_stat_activity ka ON ka.{1:s} = kl.pid \
-  		WHERE NOT bl.GRANTED LIMIT 10".format( query , pid)
+  		WHERE NOT bl.GRANTED LIMIT 5".format( query , pid)
 
 def getBlockingIterator(rows,item_name,findText, status,warning,critical) :
         perfdata = '-'
@@ -76,7 +76,8 @@ def getBlockingIterator(rows,item_name,findText, status,warning,critical) :
 
 
         #status.sort( reverse=True )
-        return str('2') + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+        #return str('2') + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+	return {'status' : '2', 'item' : item_name , 'perfdata' : perfdata, 'output' : output }
 
 
 def getNonBlockingIterator(rows,item_name,warning,critical, status) :
@@ -93,9 +94,11 @@ def getNonBlockingIterator(rows,item_name,warning,critical, status) :
                                   str(row[0]),str(row[1]),str(row[4]),str(row[2]),str(row[6]), str(row[3]),str(row[7])  )
 		status.append( st.getStatus( row[6],int(warning[0]) , int(critical[0])  ) )
 	status.sort( reverse=True )
-	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+	return {'status' : status[0], 'item' : item_name , 'perfdata' : perfdata, 'output' : output }
+
 
 def getLocks( param=None ) :
+
         item_name = 'POSTGRES_'
         status = []
         perfdata = '-'
@@ -104,7 +107,7 @@ def getLocks( param=None ) :
 		check = (param['check']).lower()
 		findText = param.get('find')
 		item_name = item_name + check.upper() + '_LOCKS'
-		dbname = param['dbname']
+		dbnames = param.get('dbname')
 		user = param['user']
 		password = param.get('password')
 		host = param['host'][0]
@@ -113,7 +116,7 @@ def getLocks( param=None ) :
 		critical = []
 
 		query = "SELECT substring(version() FROM '(\d.\d)')::double precision"
-                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
+                results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbnames[0], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None :
                         return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
@@ -129,27 +132,35 @@ def getLocks( param=None ) :
 		
 		results = []
 
-
-		if check == 'nonblocking' :
-			results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
-				 'user' : user ,'password' : password } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
-		elif check == 'blocking' :
-			results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
-                                 'user' : user ,'password' : password } ,getBlockingVersionQuery(version)  )
-
-		if results[0] == None :
-			return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
-
-		retval = []
 		
+		for dbname in dbnames :
+			if check == 'nonblocking' :
+				results = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
+					 'user' : user ,'password' : password } ,getNonBlockingVersionQuery(version,warning[0], warning[1])  )
+			elif check == 'blocking' :
+				results  = sql.getSQLResult ( {'host': host , 'port' : port , 'dbname': dbname,\
+                                	 'user' : user ,'password' : password } ,getBlockingVersionQuery(version)  )
 
-		if len(results[1]) > 0 and check == 'nonblocking' : 	
-			retval.append(getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical, status))
-		elif len(results[1]) > 0 and check == 'blocking' :
-			retval.append(getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS',findText, status,warning,critical))
-		else :
-			retval.append('0' + ' ' + item_name  + ' ' + '-' + ' ' + 'OK')
+			if results[0] == None :
+				return '2' + ' ' + item_name + ' ' + perfdata + ' ' + results[1]
 
-		if len(retval) > 0 :
-			return retval[0]
+			retval = {}
+			if len(results[1]) > 0 and check == 'nonblocking' : 	
+				retval = getNonBlockingIterator(results[1],'POSTGRES_NONBLOCKING_LOCKS',warning,critical, status)
+			elif len(results[1]) > 0 and check == 'blocking' :
+				retval = getBlockingIterator(results[1],'POSTGRES_BLOCKING_LOCKS',findText, status,warning,critical)
+
+			status.append(retval.get('status'))
+			if perfdata != '-' and len(results[1]) > 0 :
+				perfdata = perfdata + retval.get('perfdata')
+				output = retval.get('output')
+			elif perfdata == '-' and len(results[1]) > 0  :
+				perfdata = retval.get('perfdata')
+				output = output + ';\n' + retval.get('output')	
+
+		if perfdata != '-' :
+			status.sort(reverse=True)
+			return status[0] + ' ' + item_name + ' ' +  perfdata  + ' ' + output
+		else : 
+			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'	
 

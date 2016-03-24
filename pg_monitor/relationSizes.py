@@ -47,26 +47,30 @@ def getRelationSizes( param=None ) :
 		item_name = item_name + str(param['check']).upper()
 		col_name = 'table_name' 
                 query = getQuery ( param['check'],warning[1],warning[0] ) 
-                results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': param['dbname'], 'user' : param['user'] ,'password' : param['password'] } ,query )
+		dbnames = param.get('dbname')
+
+		for dbname in dbnames : 
+                	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
-		if results[0] == None : 
-			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + results[1]
+			if results[0] == None : 
+				return '2' + ' ' + item_name  + ' ' + perfdata + ' ' + results[1]
 
-		rows = results[1]
+			rows = results[1]
 
-		if len(rows) > 0 :
-                	for row in rows :
-				status.append( st.getStatus(row[1] , warning[0] , critical[0] )  )
-                        	if perfdata == '-' :
-                                	perfdata = perf.getPerfStm (row[0],row[1],warning[0],critical[0])
-                                	output =  '{0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
-                        	elif perfdata != '-'  :
-                                	perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[1],warning[0],critical[0])
-                                	output =  output + ';{0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
+			if len(rows) > 0 :
+                		for row in rows :
+					status.append( st.getStatus(row[1] , warning[0] , critical[0] )  )
+                        		if perfdata == '-' :
+                                		perfdata = perf.getPerfStm (row[0],row[1],warning[0],critical[0])
+                                		output =  '{0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
+                        		elif perfdata != '-'  :
+                                		perfdata = perfdata + '|' + perf.getPerfStm (row[0],row[1],warning[0],critical[0])
+                                		output =  output + ';\n {0:s} is {1:d} {2:s} big'.format(row[0],row[1],warning[2])
+
+		if perfdata != '-' :
 			status.sort( reverse=True )
 			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 		else :
-                	status.append(0)
-                	return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+                	return '0' + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 
 

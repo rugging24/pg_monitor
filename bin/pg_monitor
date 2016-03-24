@@ -32,7 +32,7 @@ def runMonitor() :
         parse.add_argument ('--port' , type=str , default=5432 , nargs='?', help='Port of the database to be accessed. Default:  %(default)s')
         parse.add_argument ( '--user' , type=str , default='postgres', help='Username allowed to access the database. Default:  %(default)s')
         parse.add_argument ('--password', type=str , default='' , help='Password of the supplied user. Default:  %(default)s' )
-        parse.add_argument ( '--dbname', type=str , default='postgres', help='The name of the database to be accessed. Default:  %(default)s'  )
+        parse.add_argument ( '--dbname', type=str , default='postgres',nargs='?', help='The name(s) of database(s) to be accessed. Default:  %(default)s'  )
         parse.add_argument ( '--host', type=str , default='localhost', nargs='?' ,help='Host of the database. Default:  %(default)s' )
         parse.add_argument ( '--check', type=str, required=True, choices=['backends','connections','wals','vacuum','autovacuum','analyze','autoanalyze',\
                              'table_bloat','index_bloat','blocking','nonblocking','table_size','index_size','database_size','checkpoints',\
@@ -53,14 +53,13 @@ def runMonitor() :
         param['port'] = port
         param['user'] = args.user
         param['password'] = args.password
-        param['dbname'] = args.dbname
+        param['dbname'] = str(args.dbname).split(',')
         param['check'] = args.check
         param['find'] = str( args.find ).split(',')
 	param['warning'] = args.warning
 	param['critical'] = args.critical
 	param['exclude_db'] = str ( args.exclude_db ).split(',')
 	param['exclude_pattern'] = str ( args.exclude_pattern ).split(',')
-
 
 	pg_monitor.getArgs(param)
 
