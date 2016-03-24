@@ -7,14 +7,10 @@ import checkStatus as st
 
 
 def getReturnIndex(check) :
-	if check.lower() == 'vacuum' :
-		return [1,"pg_stat_user_tables.last_vacuum","pg_stat_user_tables.vacuum_count"]
-	elif check.lower() == 'autovacuum' :
-		return [1,"pg_stat_user_tables.last_autovacuum","pg_stat_user_tables.autovacuum_count" ]
-	elif check.lower() == 'analyze' :
-		return [1,"pg_stat_user_tables.last_analyze", "pg_stat_user_tables.analyze_count" ] 
-	elif check.lower() == 'autoanalyze' :
-		return [1,"pg_stat_user_tables.last_autoanalyze", "pg_stat_user_tables.autoanalyze_count"]
+	if check.lower() == 'vacuum' or check.lower() == 'autovacuum' :
+		return [1,"pg_stat_user_tables.last_vacuum","pg_stat_user_tables.last_autovacuum"]
+	elif check.lower() == 'analyze' or check.lower() == 'autoanalyze':
+		return [1,"pg_stat_user_tables.last_analyze", "pg_stat_user_tables.last_autoanalyze" ] 
 
 
 def getVacuums( param=None ) :
@@ -37,19 +33,24 @@ def getVacuums( param=None ) :
 		else  :
 			return '2' + ' ' + item_name  + ' ' + '-' + ' ' + 'Invalid Parameters supplied !'	 
 
-		query = "SELECT table_name,calculated_time FROM ( \
-				SELECT (schemaname || '.' || relname) table_name,\
-				CASE WHEN {0:s} IS NULL THEN  \
-					date_part('epoch',clock_timestamp() - '1970-01-01 00:00:00'::timestamp ) /60  \
-				ELSE \
-					date_part('epoch',clock_timestamp() - {0:s} ) /60 \
-				END AS calculated_time \
-			FROM \
-				pg_stat_user_tables \
-				) foo  \
-		 	WHERE \
-				( calculated_time /60 )  >=  ( {1:d} * {2:d} ) \
-                                ORDER BY calculated_time DESC LIMIT 5 ".format( index[1] , int(warning[0]) , int(warning[1]) )
+		query = "SELECT table_name,vacuum_time FROM ( \
+                                SELECT (schemaname || '.' || relname) table_name,\
+                                CASE WHEN {0:s} IS NULL  AND {1:s} IS NULL THEN  \
+                                        date_part('epoch',clock_timestamp() - '1970-01-01 00:00:00'::timestamp ) /60  \
+                                WHEN {0:s} IS NOT NULL  AND {1:s} IS NULL THEN \
+                                        date_part('epoch',clock_timestamp() - {0:s} ) /60 \
+                                WHEN {0:s} IS NULL  AND {1:s} IS NOT NULL THEN \
+                                       date_part('epoch',clock_timestamp() - {1:s} ) /60 \
+                               WHEN {0:s} IS NOT NULL  AND {1:s} IS NOT NULL THEN \
+                                       GREATEST(date_part('epoch',clock_timestamp() - {0:s} ) /60, \
+                                               date_part('epoch',clock_timestamp() - {1:s} ) /60 ) \
+                                END AS vacuum_time \
+                         FROM \
+                               pg_stat_user_tables \
+                                ) foo \
+			 WHERE \
+				( calculated_time /60 )  >=  ( {2:d} * {3:d} ) \
+				ORDER BY calculated_time DESC LIMIT 5".format( index[1],index[2] , int(warning[0]) , int(warning[1]) )
 
                 exclude_db = param.get('exclude_db')
                 for db in exclude_db :
