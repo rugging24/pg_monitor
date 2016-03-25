@@ -57,7 +57,7 @@ def getBackends( param=None ) :
 		for dbname in dbnames :
                 	results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbname, 'user' : param['user'] ,'password' : param['password'] } ,query )
 			if results[0] == None : 
-				return '2' + ' ' + item_name + ' ' + perfdata  + ' ' + results[1]
+				return '2' + ' ' + item_name + ' ' + perfdata  + ' ' + str(results[1])
 		
 			rows = results[1]
 

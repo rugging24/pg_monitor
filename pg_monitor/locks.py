@@ -117,7 +117,7 @@ def getLocks( param=None ) :
                 results = sql.getSQLResult ( {'host': host , 'port' : port, 'dbname': dbnames[0], 'user' : param['user'] ,'password' : param['password'] } ,query )
 		
 		if results[0] == None :
-                        return '2' + ' ' + item_name + ' ' + '-' + ' ' + results[1]
+                        return str('2') + ' ' + str(item_name) + ' ' + '-' + ' ' + str(results[1])
 		
 
 		version = (results[1])[0][0]
@@ -143,7 +143,7 @@ def getLocks( param=None ) :
                                 	 'user' : user ,'password' : password } ,getBlockingVersionQuery(version)  )
 
 			if results[0] == None :
-				return '2' + ' ' + item_name + ' ' + perfdata + ' ' + results[1]
+				return str('2') + ' ' + str(item_name) + ' ' + str(perfdata) + ' ' + str(results[1])
 
 			retval = {}
 			if len(results[1]) > 0 and check == 'nonblocking' : 	
@@ -161,7 +161,7 @@ def getLocks( param=None ) :
 
 		if perfdata != '-' :
 			status.sort(reverse=True)
-			return status[0] + ' ' + item_name + ' ' +  perfdata  + ' ' + output
+			return str(status[0]) + ' ' + str(item_name) + ' ' +  str(perfdata)  + ' ' + str(output)
 		else : 
 			return '0' + ' ' + item_name + ' ' + '-' + ' ' + 'OK'	
 
