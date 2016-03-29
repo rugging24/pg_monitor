@@ -25,7 +25,7 @@ def getBackends( param=None ) :
 				if exclude_db == '' :
 					exclude_db = "'" + exc + "'"
 				else : 
-				  	exclude_db = ",'" + exc + "'"
+				  	exclude_db = exclude_db + ",'" + exc + "'"
 		 
                 query = "SELECT \
 			      dbs.datname, \
