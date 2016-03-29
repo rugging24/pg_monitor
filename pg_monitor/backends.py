@@ -22,7 +22,7 @@ def getBackends( param=None ) :
 		exclude_db = ''
 		if exclude != None :
 			for exc in exclude :
-				exclude_db = " AND dbs.datname <> " + "'" + exc + "'"  	
+				exclude_db = "'" + exc + "'"  	
 		 
                 query = "SELECT \
 			      dbs.datname, \
@@ -34,7 +34,7 @@ def getBackends( param=None ) :
                          JOIN \
 				pg_database db on db.datname = dbs.datname \
                          WHERE \
-				db.datistemplate IS FALSE {0:s} ".format(exclude_db)
+				db.datistemplate IS FALSE AND dbs.datname NOT IN ({0:s})".format(exclude_db)
 				
 		results = sql.getSQLResult ( {'host': param['host'][0] , 'port' : param['port'][0], 'dbname': dbnames[0], 'user' : param['user'] ,'password' : param['password'] } ,query ) 
 		connect_sum = 0
