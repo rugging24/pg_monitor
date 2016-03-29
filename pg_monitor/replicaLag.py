@@ -61,5 +61,5 @@ def getReplicaLags( param=None ) :
 			counter += 1
 
 		status.sort(reverse=True)
-		output = output + 'NOTE: a -1 lag value means the replica is not available !!!'
+		output = output + '\n NOTE: a -1 lag value means the replica is not available !!!'
 		return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
