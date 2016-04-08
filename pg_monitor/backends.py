@@ -73,7 +73,7 @@ def getBackends( param=None ) :
 			if output_format == 'cmk' or output_format == 'check_mk' : 
 				return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
 			elif output_format == 'ngs' or output_format == 'nagios' :
-				return item_name + ' - ' + output + ' | '  str(perfdata).replace('|',' \n')
+				return item_name + ' - ' + output + ' | ' +  str(perfdata).replace('|',' \n')
 			
 
 
