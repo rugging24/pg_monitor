@@ -49,7 +49,7 @@ def getVacuums( param=None ) :
                                pg_stat_user_tables \
                                 ) foo \
 			 WHERE \
-				( vacuum_time /60 )  >=  ( {2:d} * {3:d} ) \
+				( vacuum_time )  >=  ( {2:d} * {3:d} ) \
 				ORDER BY vacuum_time DESC LIMIT 5".format( index[1],index[2] , int(warning[0]) , int(warning[1]) )
 
                 exclude_db = param.get('exclude_db')

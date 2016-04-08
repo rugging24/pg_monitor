@@ -42,6 +42,7 @@ def runMonitor() :
 	parse.add_argument ('--exclude_pattern' , type=str , nargs='?',default='', help = 'Exclude patterns not to be searched for')
         parse.add_argument ( '--warning', type=str, default =None, help='Values to be considered as warning signs ' )
         parse.add_argument ( '--critical', type=str , default=None ,help='Values for the critical checks')
+	parse.add_argument ( '--output_format', type=str , default='check_mk', choices=['check_mk','cmk','nagios','ngs'] ,help='Values for the critical checks')
         # assign all arguments to an array
         args = parse.parse_args()
         # Get the individual arguments
@@ -60,6 +61,7 @@ def runMonitor() :
 	param['critical'] = args.critical
 	param['exclude_db'] = str ( args.exclude_db ).split(',')
 	param['exclude_pattern'] = str ( args.exclude_pattern ).split(',')
+	param['output_format'] = args.output_format
 
 	pg_monitor.getArgs(param)
 

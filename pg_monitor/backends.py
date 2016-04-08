@@ -9,7 +9,6 @@ import factors as fac
 # check_mk output format 
 # status 	item_name	perfdata	output
 
-
 def getBackends( param=None ) :
 	item_name ='POSTGRES_BACKENDS'
 	status = []
@@ -17,6 +16,7 @@ def getBackends( param=None ) :
 	output = ''
 	if param != None :  # extra safety check, but absolutely not necessary 
 
+		output_format = param.get('output_format')
 		dbnames = param.get('dbname')		
 		exclude = param.get('exclude_db') if param.get('exclude_db') != None else None
 		exclude_db = ''
@@ -57,7 +57,7 @@ def getBackends( param=None ) :
 						output =  '{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
 					elif perfdata != '-'  :
 						perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
-						output =  output + ';{0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
+						output =  output + '; \n {0:s} has {1:d}% of the total connections used'.format(row[0],row[3])
 					connect_sum += int(row[2])		
 				else :
 					if perfdata == '-' :
@@ -65,11 +65,15 @@ def getBackends( param=None ) :
                                         	output =  'No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
                                 	elif perfdata != '-'  :
                                         	perfdata = perfdata + '|' + row[0] + '=' + str(row[2]) + ';' +  str(warning) + ';' + str(critical) + ';' + '1' + ';' + str(row[1])
-                                        	output =  output + ';No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
+                                        	output =  output + '; \n No backend currenlty exists for {0:s} database - which might implies that the Application connected to the database might be down or the database currently refuses connections to it '.format(row[0])
 					status.append(2)
 			status.append( st.getStatus( int(connect_sum),int(warning) , int(critical), int('0') , int(max_connect)  ) )
 			
 			status.sort( reverse=True )
-			return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+			if output_format == 'cmk' or output_format == 'check_mk' : 
+				return str(status[0]) + ' ' + item_name + ' ' + str(perfdata) + ' ' + output
+			elif output_format == 'ngs' or output_format == 'nagios' :
+				return item_name + ' - ' + output + ' | '  str(perfdata).replace('|',' \n')
+			
 
 
